@@ -1,7 +1,7 @@
-.vs/
-Debug/
-converted/
-output/
+.vs
+Debug
+converted
+output
 2D Simulator.sln
 2D Simulator.vcxproj
 2D Simulator.vcxproj.filters

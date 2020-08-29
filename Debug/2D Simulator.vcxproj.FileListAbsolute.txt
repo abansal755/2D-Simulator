@@ -1,2 +1,0 @@
-C:\Users\Akshit\Documents\C++\2D Simulator\Debug\2D Simulator.exe
-C:\Users\Akshit\Documents\C++\2D Simulator\Debug\2D Simulator.pdb

@@ -31,6 +31,56 @@ public:
 };
 
 class System {
+private:
+    void updateAccn(particle& p,int i) {
+        p.ax = 0;
+        p.ay = 0;
+        for (int j = 0; j < electricFields.size(); j++) {
+            radialField& field = electricFields[j];
+            float cos = (p.x - field.cx) / distance(p.x, p.y, field.cx, field.cy);
+            float sin = (p.y - field.cy) / distance(p.x, p.y, field.cx, field.cy);
+            p.ax += (p.q / p.m) * field.magnitude(p.x, p.y) * cos;
+            p.ay += (p.q / p.m) * field.magnitude(p.x, p.y) * sin;
+        }
+        for (int j = 0; j < gravitationalFields.size(); j++) {
+            radialField& field = gravitationalFields[j];
+            float cos = (p.x - field.cx) / distance(p.x, p.y, field.cx, field.cy);
+            float sin = (p.y - field.cy) / distance(p.x, p.y, field.cx, field.cy);
+            p.ax += -1 * field.magnitude(p.x, p.y) * cos;
+            p.ay += -1 * field.magnitude(p.x, p.y) * sin;
+        }
+        for (int j = 0; j < uniformElectricFields.size(); j++) {
+            uniformField& f = uniformElectricFields[j];
+            p.ax += (p.q / p.m) * f.ex;
+            p.ay += (p.q / p.m) * f.ey;
+        }
+        for (int j = 0; j < uniformGravitationalFields.size(); j++) {
+            uniformField& f = uniformGravitationalFields[j];
+            p.ax += f.ex;
+            p.ay += f.ey;
+        }
+        for (int j = 0; j < particles.size(); j++) {
+            if (j == i) continue;
+            particle& p2 = particles[j];
+            float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
+            float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
+            float k = 9e9;
+            p.ax += ((k * p.q * p2.q) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2)) * p.m) * cos;
+            p.ay += ((k * p.q * p2.q) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2)) * p.m) * sin;
+        }
+        for (int j = 0; j < particles.size(); j++) {
+            if (j == i) continue;
+            particle& p2 = particles[j];
+            float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
+            float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
+            float G = 6.67e-11;
+            p.ax += -1 * ((G * p2.m) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2))) * cos;
+            p.ay += -1 * ((G * p2.m) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2))) * sin;
+        }
+        //Viscous Force
+        p.ax -= (visc_k * p.vx) / p.m;
+        p.ay -= (visc_k * p.vy) / p.m;
+    }
 public:
     vector<particle> particles;
     vector<radialField> electricFields;
@@ -52,57 +102,7 @@ public:
         unitTime = ((float)1 / iterations) * timeFactor;
     }
     void simulate() {
-        for (int i = 0; i < particles.size(); i++) {
-            //set ax and ay intially
-            particle& p = particles[i];
-            p.ax = 0;
-            p.ay = 0;
-            for (int j = 0; j < electricFields.size(); j++) {
-                radialField& field = electricFields[j];
-                float cos = (p.x - field.cx) / distance(p.x, p.y, field.cx, field.cy);
-                float sin = (p.y - field.cy) / distance(p.x, p.y, field.cx, field.cy);
-                p.ax += (p.q / p.m) * field.magnitude(p.x, p.y) * cos;
-                p.ay += (p.q / p.m) * field.magnitude(p.x, p.y) * sin;
-            }
-            for (int j = 0; j < gravitationalFields.size(); j++) {
-                radialField& field = gravitationalFields[j];
-                float cos = (p.x - field.cx) / distance(p.x, p.y, field.cx, field.cy);
-                float sin = (p.y - field.cy) / distance(p.x, p.y, field.cx, field.cy);
-                p.ax += -1 * field.magnitude(p.x, p.y) * cos;
-                p.ay += -1 * field.magnitude(p.x, p.y) * sin;
-            }
-            for (int j = 0; j < uniformElectricFields.size(); j++) {
-                uniformField& f = uniformElectricFields[j];
-                p.ax += (p.q / p.m) * f.ex;
-                p.ay += (p.q / p.m) * f.ey;
-            }
-            for (int j = 0; j < uniformGravitationalFields.size(); j++) {
-                uniformField& f = uniformGravitationalFields[j];
-                p.ax += f.ex;
-                p.ay += f.ey;
-            }
-            for (int j = 0; j < particles.size(); j++) {
-                if (j == i) continue;
-                particle& p2 = particles[j];
-                float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
-                float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
-                float k = 9e9;
-                p.ax += ((k * p.q * p2.q) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2)) * p.m) * cos;
-                p.ay += ((k * p.q * p2.q) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2)) * p.m) * sin;
-            }
-            for (int j = 0; j < particles.size(); j++) {
-                if (j == i) continue;
-                particle& p2 = particles[j];
-                float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
-                float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
-                float G = 6.67e-11;
-                p.ax += -1 * ((G * p2.m) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2))) * cos;
-                p.ay += -1 * ((G * p2.m) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2))) * sin;
-            }
-            //Viscous Force
-            p.ax -= (visc_k * p.vx) / p.m;
-            p.ay -= (visc_k * p.vy) / p.m;
-        }
+        for (int i = 0; i < particles.size(); i++) updateAccn(particles[i], i);
 
         image* buffer = new image(boundY, boundX);
         int frame = 0;
@@ -118,7 +118,6 @@ public:
                 }
             }
         }
-
         blur(buffer, 3);
         for (int i = 0; i < boundX; i++) buffer->frame[0][i] = { 255,0,0 };
         for (int i = 0; i < boundX; i++) buffer->frame[boundY - 1][i] = { 255,0,0 };
@@ -166,62 +165,16 @@ public:
                 }
                 frame++;
             }
+
             for (int j = 0; j < particles.size(); j++) {
                 particle& p = particles[j];
                 particle pC = p;
-
                 time += unitTime;
                 p.x += pC.vx * unitTime;
                 p.y += pC.vy * unitTime;
                 p.vx += pC.ax * unitTime;
                 p.vy += pC.ay * unitTime;
-                p.ax = 0;
-                p.ay = 0;
-                for (int k = 0; k < electricFields.size(); k++) {
-                    radialField& field = electricFields[k];
-                    float cos = (pC.x - field.cx) / distance(pC.x, pC.y, field.cx, field.cy);
-                    float sin = (pC.y - field.cy) / distance(pC.x, pC.y, field.cx, field.cy);
-                    p.ax += (pC.q / pC.m) * field.magnitude(pC.x, pC.y) * cos;
-                    p.ay += (pC.q / pC.m) * field.magnitude(pC.x, pC.y) * sin;
-                }
-                for (int k = 0; k < gravitationalFields.size(); k++) {
-                    radialField& field = gravitationalFields[k];
-                    float cos = (pC.x - field.cx) / distance(pC.x, pC.y, field.cx, field.cy);
-                    float sin = (pC.y - field.cy) / distance(pC.x, pC.y, field.cx, field.cy);
-                    p.ax += -1 * field.magnitude(pC.x, pC.y) * cos;
-                    p.ay += -1 * field.magnitude(pC.x, pC.y) * sin;
-                }
-                for (int k = 0; k < uniformElectricFields.size(); k++) {
-                    uniformField& f = uniformElectricFields[k];
-                    p.ax += (p.q / p.m) * f.ex;
-                    p.ay += (p.q / p.m) * f.ey;
-                }
-                for (int k = 0; k < uniformGravitationalFields.size(); k++) {
-                    uniformField& f = uniformGravitationalFields[k];
-                    p.ax += f.ex;
-                    p.ay += f.ey;
-                }
-                for (int l = 0; l < particles.size(); l++) {
-                    if (l == j) continue;
-                    particle& p2 = particles[l];
-                    float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
-                    float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
-                    float k = 9e9;
-                    p.ax += ((k * p.q * p2.q) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2)) * p.m) * cos;
-                    p.ay += ((k * p.q * p2.q) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2)) * p.m) * sin;
-                }
-                for (int l = 0; l < particles.size(); l++) {
-                    if (l == j) continue;
-                    particle& p2 = particles[l];
-                    float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
-                    float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
-                    float G = 6.67e-11;
-                    p.ax += -1 * ((G * p2.m) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2))) * cos;
-                    p.ay += -1 * ((G * p2.m) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2))) * sin;
-                }
-                //Viscous Force
-                p.ax -= (visc_k * p.vx) / p.m;
-                p.ay -= (visc_k * p.vy) / p.m;
+                updateAccn(particles[j], j);
             }
         }
         delete buffer;

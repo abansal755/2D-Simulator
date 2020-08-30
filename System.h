@@ -32,7 +32,7 @@ public:
 
 class System {
 private:
-    void updateAccn(particle& p,int i) {
+    void updateAccn(particle& p) {
         p.ax = 0;
         p.ay = 0;
         for (int j = 0; j < electricFields.size(); j++) {
@@ -60,7 +60,7 @@ private:
             p.ay += f.ey;
         }
         for (int j = 0; j < particles.size(); j++) {
-            if (j == i) continue;
+            if (&p == &particles[j]) continue;
             particle& p2 = particles[j];
             float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
             float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
@@ -69,7 +69,7 @@ private:
             p.ay += ((k * p.q * p2.q) / (pow(p.x - p2.x, 2) + pow(p.y - p2.y, 2)) * p.m) * sin;
         }
         for (int j = 0; j < particles.size(); j++) {
-            if (j == i) continue;
+            if (&p == &particles[j]) continue;
             particle& p2 = particles[j];
             float cos = (p.x - p2.x) / distance(p.x, p.y, p2.x, p2.y);
             float sin = (p.y - p2.y) / distance(p.x, p.y, p2.x, p2.y);
@@ -102,7 +102,7 @@ public:
         unitTime = ((float)1 / iterations) * timeFactor;
     }
     void simulate() {
-        for (int i = 0; i < particles.size(); i++) updateAccn(particles[i], i);
+        for (int i = 0; i < particles.size(); i++) updateAccn(particles[i]);
 
         image* buffer = new image(boundY, boundX);
         int frame = 0;
@@ -174,7 +174,7 @@ public:
                 p.y += pC.vy * unitTime;
                 p.vx += pC.ax * unitTime;
                 p.vy += pC.ay * unitTime;
-                updateAccn(particles[j], j);
+                updateAccn(particles[j]);
             }
         }
         delete buffer;

@@ -1,0 +1,16 @@
+scale boundX bound Y iterations duration timeFactor padding visc_k
+
+num_of_particles
+vx vy x y q m radius R G B
+
+num_of_radial_electric_fields
+cx cy k
+
+num_of_radial_gravitational_fields
+cx cy k
+
+num_of_uniform_electric_fields
+ex ey
+
+num_of_uniform_gravitational_fields
+ex ey

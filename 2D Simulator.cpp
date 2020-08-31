@@ -73,10 +73,46 @@ int numOfDigits(int n) {
 }
 
 int main() {
-    System s(1,500,500,300,2,3,3);
-    particle p(80,40,0,0,5,5);
-    UF f(0, -10);
-    s.particles.push_back(p);
-    s.UGFs.push_back(f);
+    ifstream ifile("input.txt");
+    if (ifile.fail()) {
+        cout << "input.txt not found";
+        return 0;
+    }
+    System s;
+    int nP, nREF, nRGF, nUEF, nUGF;
+    ifile >> s.scale >> s.boundX >> s.boundY >> s.iterations >> s.duration >> s.timeFactor >> s.padding >> s.visc_k;
+    ifile >> nP;
+    for (int i = 0; i < nP; i++) {
+        particle p;
+        ifile >> p.vx >> p.vy >> p.x >> p.y >> p.q >> p.m >> p.radius;
+        int r, g, b;
+        ifile >> r >> g >> b;
+        p.colour = { (unsigned char)r,(unsigned char)g,(unsigned char)b };
+        s.particles.push_back(p);
+    }
+    ifile >> nREF;
+    for (int i = 0; i < nREF; i++) {
+        RF f;
+        ifile >> f.cx >> f.cy >> f.k;
+        s.EFs.push_back(f);
+    }
+    ifile >> nRGF;
+    for (int i = 0; i < nRGF; i++) {
+        RF f;
+        ifile >> f.cx >> f.cy >> f.k;
+        s.GFs.push_back(f);
+    }
+    ifile >> nUEF;
+    for (int i = 0; i < nUEF; i++) {
+        UF f;
+        ifile >> f.ex >> f.ey;
+        s.UEFs.push_back(f);
+    }
+    ifile >> nUGF;
+    for (int i = 0; i < nUGF; i++) {
+        UF f;
+        ifile >> f.ex >> f.ey;
+        s.UGFs.push_back(f);
+    }
     s.simulate();
 }

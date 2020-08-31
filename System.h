@@ -9,8 +9,9 @@ public:
     float x, y;
     float q, m;
     int radius; // in px
-    particle(float vx = 0, float vy = 0, float x = 0, float y = 0, float q = 0, float m = 0, int radius = 5)
-        :vx(vx), vy(vy), x(x), y(y), q(q), m(m), radius(radius) {};
+    rgb colour;
+    particle(float vx = 0, float vy = 0, float x = 0, float y = 0, float q = 0, float m = 0, int radius = 5, rgb colour = { 255,255,255 })
+        :vx(vx), vy(vy), x(x), y(y), q(q), m(m), radius(radius), colour(colour) {};
 };
 
 class radialField {
@@ -27,7 +28,7 @@ public:
 class uniformField {
 public:
     float ex, ey;
-    uniformField(float ex, float ey) :ex(ex), ey(ey) {}
+    uniformField(float ex = 0, float ey = 0) :ex(ex), ey(ey) {}
 };
 
 class System {
@@ -81,6 +82,30 @@ private:
         p.ax -= (visc_k * p.vx) / p.m;
         p.ay -= (visc_k * p.vy) / p.m;
     }
+    void updateBuffer(image*& buffer) {
+        for (int j = 0; j < boundY; j++) {
+            for (int k = 0; k < boundX; k++) {
+                buffer->frame[j][k] = { 0,0,0 };
+            }
+        }
+        for (int j = 0; j < particles.size(); j++) {
+            particle& p = particles[j];
+            int I = p.y / scale;
+            int J = p.x / scale;
+            for (int di = -p.radius; di <= p.radius; di++) {
+                for (int dj = -p.radius; dj <= p.radius; dj++) {
+                    if (I + di < 0 || I + di >= boundY) continue;
+                    if (J + dj < 0 || J + dj >= boundX) continue;
+                    buffer->frame[boundY - I - di - 1][J + dj] = p.colour;
+                }
+            }
+        }
+        blur(buffer, 3);
+        for (int i = 0; i < boundX; i++) buffer->frame[0][i] = { 255,0,0 };
+        for (int i = 0; i < boundX; i++) buffer->frame[boundY - 1][i] = { 255,0,0 };
+        for (int i = 0; i < boundY; i++) buffer->frame[i][0] = { 255,0,0 };
+        for (int i = 0; i < boundY; i++) buffer->frame[i][boundX - 1] = { 255,0,0 };
+    }
 public:
     vector<particle> particles;
     vector<radialField> electricFields;
@@ -104,25 +129,9 @@ public:
     void simulate() {
         for (int i = 0; i < particles.size(); i++) updateAccn(particles[i]);
 
-        image* buffer = new image(boundY, boundX);
+        image* buffer = new image(boundX, boundY);
         int frame = 0;
-        for (int i = 0; i < particles.size(); i++) {
-            particle& p = particles[i];
-            int I = p.y / scale;
-            int J = p.x / scale;
-            for (int di = -p.radius; di <= p.radius; di++) {
-                for (int dj = -p.radius; dj <= p.radius; dj++) {
-                    if (I + di < 0 || I + di >= boundY) continue;
-                    if (J + dj < 0 || J + dj >= boundX) continue;
-                    buffer->frame[boundY - I - di - 1][J + dj] = { 255,255,255 };
-                }
-            }
-        }
-        blur(buffer, 3);
-        for (int i = 0; i < boundX; i++) buffer->frame[0][i] = { 255,0,0 };
-        for (int i = 0; i < boundX; i++) buffer->frame[boundY - 1][i] = { 255,0,0 };
-        for (int i = 0; i < boundY; i++) buffer->frame[i][0] = { 255,0,0 };
-        for (int i = 0; i < boundY; i++) buffer->frame[i][boundX - 1] = { 255,0,0 };
+        updateBuffer(buffer);
         _mkdir(".\\output");
         string fileName = (string)".\\output\\" + (string)"output_";
         string newFileName = fileName;
@@ -132,40 +141,6 @@ public:
         frame++;
 
         for (int i = 1; i < iterations * duration; i++) {
-            if (i % (iterations / 30) == 0) {
-                for (int j = 0; j < boundY; j++) {
-                    for (int k = 0; k < boundX; k++) {
-                        buffer->frame[j][k] = { 0,0,0 };
-                    }
-                }
-                for (int j = 0; j < particles.size(); j++) {
-                    particle& p = particles[j];
-                    int I = p.y / scale;
-                    int J = p.x / scale;
-                    for (int di = -p.radius; di <= p.radius; di++) {
-                        for (int dj = -p.radius; dj <= p.radius; dj++) {
-                            if (I + di < 0 || I + di >= boundY) continue;
-                            if (J + dj < 0 || J + dj >= boundX) continue;
-                            buffer->frame[boundY - I - di - 1][J + dj] = { 255,255,255 };
-                        }
-                    }
-                }
-                blur(buffer, 3);
-                for (int i = 0; i < boundX; i++) buffer->frame[0][i] = { 255,0,0 };
-                for (int i = 0; i < boundX; i++) buffer->frame[boundY - 1][i] = { 255,0,0 };
-                for (int i = 0; i < boundY; i++) buffer->frame[i][0] = { 255,0,0 };
-                for (int i = 0; i < boundY; i++) buffer->frame[i][boundX - 1] = { 255,0,0 };
-                int numDigits = numOfDigits(frame);
-                if (numDigits >= padding) writeFile(buffer, fileName + to_string(frame) + ".ppm");
-                else {
-                    string newFileName = fileName;
-                    for (int j = 0; j < padding - numDigits; j++) newFileName += '0';
-                    newFileName += to_string(frame) + ".ppm";
-                    writeFile(buffer, newFileName);
-                }
-                frame++;
-            }
-
             for (int j = 0; j < particles.size(); j++) {
                 particle& p = particles[j];
                 particle pC = p;
@@ -175,6 +150,19 @@ public:
                 p.vx += pC.ax * unitTime;
                 p.vy += pC.ay * unitTime;
                 updateAccn(particles[j]);
+            }
+
+            if (i % (iterations / 30) == 0) {
+                updateBuffer(buffer);
+                int numDigits = numOfDigits(frame);
+                if (numDigits >= padding) writeFile(buffer, fileName + to_string(frame) + ".ppm");
+                else {
+                    string newFileName = fileName;
+                    for (int j = 0; j < padding - numDigits; j++) newFileName += '0';
+                    newFileName += to_string(frame) + ".ppm";
+                    writeFile(buffer, newFileName);
+                }
+                frame++;
             }
         }
         delete buffer;

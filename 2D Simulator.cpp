@@ -15,6 +15,10 @@
 #define UEFs uniformElectricFields
 using namespace std;
 
+//TODO: implement dielectric constant
+//TODO: work-around blur
+//TODO: collision with walls
+
 void blur(image*& img, unsigned int radius=1) {
     int width = img->width, height = img->height;
     image* img1 = new image(width, height);

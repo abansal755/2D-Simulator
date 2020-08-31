@@ -102,10 +102,14 @@ private:
             }
         }
         blur(buffer, 3);
-        for (int i = 0; i < boundX; i++) buffer->frame[0][i] = { 255,0,0 };
-        for (int i = 0; i < boundX; i++) buffer->frame[boundY - 1][i] = { 255,0,0 };
-        for (int i = 0; i < boundY; i++) buffer->frame[i][0] = { 255,0,0 };
-        for (int i = 0; i < boundY; i++) buffer->frame[i][boundX - 1] = { 255,0,0 };
+        for (int i = 0; i < boundX; i++) {
+            buffer->frame[0][i] = { 255,0,0 };
+            buffer->frame[boundY - 1][i] = { 255,0,0 };
+        }
+        for (int i = 0; i < boundY; i++) {
+            buffer->frame[i][0] = { 255,0,0 };
+            buffer->frame[i][boundX - 1] = { 255,0,0 };
+        }
     }
     void updateTraject(int i) {
         particle& p = particles[i];
@@ -190,7 +194,15 @@ public:
         _mkdir(".\\output\\trajectories");
         cout << endl;
         for (int i = 0; i < traject.size(); i++) {
-            blur(traject[i], 3);
+            blur(traject[i], 2);
+            for (int j = 0; j < boundX; j++) {
+                traject[i]->frame[0][j] = { 255,0,0 };
+                traject[i]->frame[boundY - 1][j] = { 255,0,0 };
+            }
+            for (int j = 0; j < boundY; j++) {
+                traject[i]->frame[j][0] = { 255,0,0 };
+                traject[i]->frame[j][boundX - 1] = { 255,0,0 };
+            }
             writeFile(traject[i], ".\\output\\trajectories\\particle_" + to_string(i) + (string)".ppm");
             delete traject[i];
         }

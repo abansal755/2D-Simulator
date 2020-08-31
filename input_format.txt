@@ -1,7 +1,7 @@
 scale boundX bound Y iterations duration timeFactor padding visc_k
 
 num_of_particles
-vx vy x y q m radius R G B
+vx vy x y q m radius trajectRadius R G B
 
 num_of_radial_electric_fields
 cx cy k

@@ -9,9 +9,10 @@ public:
     float x, y;
     float q, m;
     int radius; // in px
+    int trajectRadius;
     rgb colour;
-    particle(float vx = 0, float vy = 0, float x = 0, float y = 0, float q = 0, float m = 0, int radius = 5, rgb colour = { 255,255,255 })
-        :vx(vx), vy(vy), x(x), y(y), q(q), m(m), radius(radius), colour(colour) {};
+    particle(float vx = 0, float vy = 0, float x = 0, float y = 0, float q = 0, float m = 0, int radius = 5, int trajectRadius = 5, rgb colour = { 255,255,255 })
+        :vx(vx), vy(vy), x(x), y(y), q(q), m(m), radius(radius), colour(colour), trajectRadius(trajectRadius) {};
 };
 
 class radialField {
@@ -106,6 +107,18 @@ private:
         for (int i = 0; i < boundY; i++) buffer->frame[i][0] = { 255,0,0 };
         for (int i = 0; i < boundY; i++) buffer->frame[i][boundX - 1] = { 255,0,0 };
     }
+    void updateTraject(int i) {
+        particle& p = particles[i];
+        int I = p.y / scale;
+        int J = p.x / scale;
+        for (int di = -p.trajectRadius; di <= p.trajectRadius; di++) {
+            for (int dj = -p.trajectRadius; dj <= p.trajectRadius; dj++) {
+                if (I + di < 0 || I + di >= boundY) continue;
+                if (J + dj < 0 || J + dj >= boundX) continue;
+                traject[i]->frame[boundY - I - di - 1][J + dj] = p.colour;
+            }
+        }
+    }
 public:
     vector<particle> particles;
     vector<radialField> electricFields;
@@ -121,19 +134,26 @@ public:
     float timeFactor; //1-real time
     int padding;
     float visc_k;
+    vector<image*> traject;
     System(float scale = 1, int boundX = 100, int boundY = 100, int iterations = 300, int duration = 1, float timeFactor = 1, int padding = 3, float visc_k = 0)
         :scale(scale), boundX(boundX), boundY(boundY), iterations(iterations), duration(duration), timeFactor(timeFactor), padding(padding), visc_k(visc_k) {
         time = 0;
         unitTime = ((float)1 / iterations) * timeFactor;
     }
     void simulate() {
+        for (int i = 0; i < particles.size(); i++) {
+            //image img(boundX, boundY);
+            //traject.push_back(img);
+            traject.push_back(new image(boundX, boundY));
+        }
         for (int i = 0; i < particles.size(); i++) updateAccn(particles[i]);
 
         image* buffer = new image(boundX, boundY);
         int frame = 0;
         updateBuffer(buffer);
         _mkdir(".\\output");
-        string fileName = (string)".\\output\\" + (string)"output_";
+        _mkdir(".\\output\\simulation");
+        string fileName = (string)".\\output\\simulation\\" + (string)"simulation_";
         string newFileName = fileName;
         for (int i = 0; i < padding; i++) newFileName += '0';
         newFileName += ".ppm";
@@ -150,6 +170,7 @@ public:
                 p.vx += pC.ax * unitTime;
                 p.vy += pC.ay * unitTime;
                 updateAccn(particles[j]);
+                updateTraject(j);
             }
 
             if (i % (iterations / 30) == 0) {
@@ -166,5 +187,12 @@ public:
             }
         }
         delete buffer;
+        _mkdir(".\\output\\trajectories");
+        cout << endl;
+        for (int i = 0; i < traject.size(); i++) {
+            blur(traject[i], 3);
+            writeFile(traject[i], ".\\output\\trajectories\\particle_" + to_string(i) + (string)".ppm");
+            delete traject[i];
+        }
     }
 };

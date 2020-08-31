@@ -84,7 +84,7 @@ int main() {
     ifile >> nP;
     for (int i = 0; i < nP; i++) {
         particle p;
-        ifile >> p.vx >> p.vy >> p.x >> p.y >> p.q >> p.m >> p.radius;
+        ifile >> p.vx >> p.vy >> p.x >> p.y >> p.q >> p.m >> p.radius >> p.trajectRadius;
         int r, g, b;
         ifile >> r >> g >> b;
         p.colour = { (unsigned char)r,(unsigned char)g,(unsigned char)b };

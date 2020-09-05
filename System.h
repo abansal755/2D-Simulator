@@ -145,11 +145,7 @@ public:
         unitTime = ((float)1 / iterations) * timeFactor;
     }
     void simulate() {
-        for (int i = 0; i < particles.size(); i++) {
-            //image img(boundX, boundY);
-            //traject.push_back(img);
-            traject.push_back(new image(boundX, boundY));
-        }
+        for (int i = 0; i < particles.size(); i++) traject.push_back(new image(boundX, boundY));
         for (int i = 0; i < particles.size(); i++) updateAccn(particles[i]);
 
         image* buffer = new image(boundX, boundY);
@@ -157,6 +153,8 @@ public:
         updateBuffer(buffer);
         _mkdir(".\\output");
         _mkdir(".\\output\\simulation");
+        _mkdir(".\\output\\trajectories");
+        _mkdir(".\\output\\converted");
         string fileName = (string)".\\output\\simulation\\" + (string)"simulation_";
         string newFileName = fileName;
         for (int i = 0; i < padding; i++) newFileName += '0';
@@ -191,7 +189,6 @@ public:
             }
         }
         delete buffer;
-        _mkdir(".\\output\\trajectories");
         cout << endl;
         for (int i = 0; i < traject.size(); i++) {
             blur(traject[i], 2);

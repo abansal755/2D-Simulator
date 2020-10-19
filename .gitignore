@@ -1,10 +1,8 @@
-.vs
-Debug
-Release
-converted
-output
-2D Simulator.sln
-2D Simulator.vcxproj
-2D Simulator.vcxproj.filters
-2D Simulator.vcxproj.user
-input.txt
+debug
+release
+.qmake.stash
+2D-Simulator.pro.user
+Makefile
+Makefile.debug
+Makefile.Release
+ui_mainwindow.h

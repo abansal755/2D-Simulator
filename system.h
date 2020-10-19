@@ -88,6 +88,7 @@ public:
 class gravitationalRadialField:public radialField{
 public:
     gravitationalRadialField(float cx=0,float cy=0,float k=0):radialField(cx,cy,k){}
+    gravitationalRadialField(particle p):radialField(p.X(),p.Y(),_G*p.M()){}//returns the self generated field by particle
     float Ax(particle p){
         float cos=(p.X()-cx)/distance(p.X(),p.Y(),cx,cy);
         return -cos*magnitude(p.X(),p.Y());
@@ -108,6 +109,7 @@ public:
 class electricRadialField:public radialField{
 public:
     electricRadialField(float cx=0,float cy=0,float k=0):radialField(cx,cy,k){}
+    electricRadialField(particle p):radialField(p.X(),p.Y(),_K*p.Q()){}//returns the self generated field by particle
     float Ax(particle p){
         float cos=(p.X()-cx)/distance(p.X(),p.Y(),cx,cy);
         return p.Q()*cos*magnitude(p.X(),p.Y())/p.M();
@@ -117,3 +119,10 @@ public:
         return p.Q()*sin*magnitude(p.X(),p.Y())/p.M();
     }
 };
+
+typedef radialField RF;
+typedef uniformField UF;
+typedef gravitationalRadialField GRF;
+typedef gravitationalUniformField GUF;
+typedef electricRadialField ERF;
+typedef electricUniformField EUF;

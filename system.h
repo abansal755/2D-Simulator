@@ -1,5 +1,6 @@
 #include<bits/stdc++.h>
-#include<QColor>
+#include<QImage>
+#include<QDebug>
 using namespace std;
 
 const float _G = 6.67259e-11;
@@ -126,3 +127,164 @@ typedef gravitationalRadialField GRF;
 typedef gravitationalUniformField GUF;
 typedef electricRadialField ERF;
 typedef electricUniformField EUF;
+
+class System{
+    vector<particle*> particles;
+    vector<field*> fields;
+    vector<QImage*> imgSeq;
+    float scale;// 1px corresponds to scale meters
+    int boundX,boundY;//in px
+    int iterations;//per second and must be a multiple of 30(fps)
+    int duration;//num of seconds to simulate
+    float timeFactor;// 1-realtime
+    float dt;// 1/iterations
+    float time;
+    float visc_k;
+
+    void updateAccn(particle*p){
+        p->setAx(0);
+        p->setAy(0);
+        for(int i=0;i<fields.size();i++){
+            p->setAx(p->Ax() + fields[i]->Ax(*p));
+            p->setAy(p->Ay() + fields[i]->Ay(*p));
+        }
+        for(int i=0;i<particles.size();i++){
+            if(particles[i]==p) continue;
+            field gf=GRF(*particles[i]);
+            field ef=ERF(*particles[i]);
+            p->setAx(p->Ax() + gf.Ax(*p));
+            p->setAy(p->Ay() + gf.Ay(*p));
+            p->setAx(p->Ax() + ef.Ax(*p));
+            p->setAy(p->Ay() + ef.Ay(*p));
+        }
+        p->setAx(p->Ax() - visc_k*p->Vx()/p->M());
+        p->setAy(p->Ay() - visc_k*p->Vy()/p->M());
+    }
+    void blur(QImage&img,int radius=1){
+            int width = img.width(), height = img.height();
+            QImage img1(width,height,img.format());
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    int r = 0, g = 0, b = 0;
+                    int num = 0;
+                    for (int di = -radius; di <= radius; di++) {
+                        for (int dj = -radius; dj <= radius; dj++) {
+                            if (i + di < 0 || i + di >= height) continue;
+                            if (j + dj < 0 || j + dj >= width) continue;
+                            QColor c=img.pixelColor(j+dj,i+di);
+                            r += c.red();
+                            g += c.green();
+                            b += c.blue();
+                            num++;
+                        }
+                    }
+                    r /= num;
+                    g /= num;
+                    b /= num;
+                    img1.setPixelColor(j,i,QColor(r,g,b,img.pixelColor(j,i).alpha()));
+                }
+            }
+            img=img1;
+    }
+    void updateBuffer(QImage*buffer){
+        for(int y=0;y<boundY;y++){
+            for(int x=0;x<boundX;x++) buffer->setPixelColor(x,y,Qt::black);
+        }
+        for(int i=0;i<particles.size();i++){
+            particle*p=particles[i];
+            int y=p->Y()/scale;
+            int x=p->X()/scale;
+            for(int dy=-p->Radius();dy<=p->Radius();dy++){
+                for(int dx=-p->Radius();dx<=p->Radius();dx++){
+                    if(x+dx<0 || x+dx>=boundX) continue;
+                    if(y+dy<0 || y+dy>=boundY) continue;
+                    buffer->setPixelColor(x+dx,boundY-y-dy-1,p->Color());
+                }
+            }
+        }
+        blur(*buffer,3);
+        for(int y=0;y<boundY;y++){
+            buffer->setPixelColor(0,y,Qt::red);
+            buffer->setPixelColor(boundX-1,y,Qt::red);
+        }
+        for(int x=0;x<boundX;x++){
+            buffer->setPixelColor(x,0,Qt::red);
+            buffer->setPixelColor(x,boundY-1,Qt::red);
+        }
+
+    }
+public:
+    System(float scale = 1, int boundX = 100, int boundY = 100, int iterations = 300, int duration = 1, float timeFactor = 1, float visc_k = 0)
+            :scale(scale), boundX(boundX), boundY(boundY), iterations(iterations), duration(duration), timeFactor(timeFactor), visc_k(visc_k)
+    {
+            time = 0;
+            dt = ((float)1 / iterations) * timeFactor;
+    }
+    ~System(){
+        clearParticles();
+        clearFields();
+        clearImgBuffer();
+    }
+    //getters
+    float Scale(){return scale;}
+    int BoundX(){return boundX;}
+    int BoundY(){return boundY;}
+    int Iterations(){return iterations;}
+    int Duration(){return duration;}
+    float TimeFactor(){return timeFactor;}
+    float Dt(){return dt;}
+    float Time(){return time;}
+    float Visc_K(){return visc_k;}
+    //setters
+    void setScale(float scale){this->scale=scale;}
+    void setBoundX(int boundX){this->boundX=boundX;}
+    void setBoundY(int boundY){this->boundY=boundY;}
+    void setIterations(int iterations){this->iterations=iterations;}
+    void setDuration(int duration){this->duration=duration;}
+    void setTimeFactor(float timeFactor){this->timeFactor=timeFactor;}
+    void setVisc_K(float visc_k){this->visc_k=visc_k;}
+
+    void clearParticles(){
+        for(int i=0;i<particles.size();i++) delete particles[i];
+        particles.clear();
+    }
+    void clearFields(){
+        for(int i=0;i<fields.size();i++) delete fields[i];
+        fields.clear();
+    }
+    void clearImgBuffer(){
+        for(int i=0;i<imgSeq.size();i++) delete imgSeq[i];
+        imgSeq.clear();
+    }
+    void addParticle(particle*p){particles.push_back(p);}
+    void addField(field*f){fields.push_back(f);}
+
+    void simulate(){
+        for(int i=0;i<particles.size();i++) updateAccn(particles[i]);
+        QImage* buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
+        updateBuffer(buffer);
+        imgSeq.push_back(buffer);
+
+        for(int i=1;i<iterations*duration;i++){
+            for(int j=0;j<particles.size();j++){
+                particle pc=*particles[j];
+                particle*p=particles[j];
+                time+=dt;
+
+                p->setX(pc.X() + pc.Vx()*dt);
+                p->setY(pc.Y() + pc.Vy()*dt);
+                p->setVx(pc.Vx() + pc.Ax()*dt);
+                p->setVy(pc.Vy() + pc.Ay()*dt);
+            }
+            for(int j=0;j<particles.size();j++) updateAccn(particles[j]);
+            if(i%(iterations/30)==0){
+                buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
+                updateBuffer(buffer);
+                imgSeq.push_back(buffer);
+            }
+        }
+    }
+    void writeSimulation(){
+
+    }
+};

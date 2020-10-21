@@ -1,6 +1,7 @@
 #include<bits/stdc++.h>
 #include<QImage>
 #include<QDebug>
+#include<QFileDialog>
 using namespace std;
 
 const float _G = 6.67259e-11;
@@ -8,6 +9,16 @@ const float _K = 9e9;
 
 float distance(float x1, float y1, float x2, float y2) {
     return sqrt(pow(x1 - x2, 2) + pow((y1 - y2), 2));
+}
+
+int numDigits(int n){
+    if(n==0) return 1;
+    int ans=0;
+    while(n!=0){
+        ans++;
+        n/=10;
+    }
+    return ans;
 }
 
 class particle{
@@ -211,7 +222,6 @@ class System{
             buffer->setPixelColor(x,0,Qt::red);
             buffer->setPixelColor(x,boundY-1,Qt::red);
         }
-
     }
 public:
     System(float scale = 1, int boundX = 100, int boundY = 100, int iterations = 300, int duration = 1, float timeFactor = 1, float visc_k = 0)
@@ -264,6 +274,7 @@ public:
         QImage* buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
         updateBuffer(buffer);
         imgSeq.push_back(buffer);
+        qDebug()<<"Iteration: 0"<<"   time: "<<time<<"     complete";
 
         for(int i=1;i<iterations*duration;i++){
             for(int j=0;j<particles.size();j++){
@@ -282,9 +293,20 @@ public:
                 updateBuffer(buffer);
                 imgSeq.push_back(buffer);
             }
+            qDebug()<<"Iteration: "<<i<<"   time: "<<time<<"     complete";
         }
+        qDebug()<<"Simulation Complete";
     }
     void writeSimulation(){
-
+        QWidget w;
+        QString dir=QFileDialog::getExistingDirectory(&w,"Select Directory","");
+        dir+="/frame";
+        int padding=numDigits(imgSeq.size()-1);
+        for(int i=0;i<imgSeq.size();i++){
+            QString fileName=dir;
+            for(int j=0;j<padding-numDigits(i);j++) fileName+='0';
+            fileName+=QString::number(i)+".png";
+            imgSeq[i]->save(fileName,"",100);
+        }
     }
 };

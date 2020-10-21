@@ -7,46 +7,9 @@ using namespace std;
 const float _G = 6.67259e-11;
 const float _K = 9e9;
 
-float distance(float x1, float y1, float x2, float y2) {
-    return sqrt(pow(x1 - x2, 2) + pow((y1 - y2), 2));
-}
-
-int numDigits(int n){
-    if(n==0) return 1;
-    int ans=0;
-    while(n!=0){
-        ans++;
-        n/=10;
-    }
-    return ans;
-}
-
-void blur(QImage&img,int radius=1){
-    int width = img.width(), height = img.height();
-    QImage img1(width,height,img.format());
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            int r = 0, g = 0, b = 0;
-            int num = 0;
-            for (int di = -radius; di <= radius; di++) {
-                for (int dj = -radius; dj <= radius; dj++) {
-                    if (i + di < 0 || i + di >= height) continue;
-                    if (j + dj < 0 || j + dj >= width) continue;
-                    QColor c=img.pixelColor(j+dj,i+di);
-                    r += c.red();
-                    g += c.green();
-                    b += c.blue();
-                    num++;
-                }
-            }
-            r /= num;
-            g /= num;
-            b /= num;
-            img1.setPixelColor(j,i,QColor(r,g,b,img.pixelColor(j,i).alpha()));
-        }
-    }
-    img=img1;
-}
+float distance(float x1, float y1, float x2, float y2);
+int numDigits(int n);
+void blur(QImage&img,int radius);
 
 class particle{
     float ax,ay;
@@ -169,7 +132,6 @@ typedef electricUniformField EUF;
 class System{
     vector<particle*> particles;
     vector<field*> fields;
-    vector<QImage*> imgSeq;
     vector<QImage*> trajects;
     float scale;// 1px corresponds to scale meters
     int boundX,boundY;//in px
@@ -248,7 +210,6 @@ public:
     ~System(){
         clearParticles();
         clearFields();
-        clearImgBuffer();
         clearTrajects();
     }
     //getters
@@ -280,10 +241,6 @@ public:
         for(int i=0;i<fields.size();i++) delete fields[i];
         fields.clear();
     }
-    void clearImgBuffer(){
-        for(int i=0;i<imgSeq.size();i++) delete imgSeq[i];
-        imgSeq.clear();
-    }
     void clearTrajects(){
         for(int i=0;i<trajects.size();i++) delete trajects[i];
         trajects.clear();
@@ -292,14 +249,30 @@ public:
     void addField(field*f){fields.push_back(f);}
 
     void simulate(){
+        QWidget widget;
+        QString directoryPath=QFileDialog::getExistingDirectory(&widget,"Select Directory");
+        if(directoryPath=="") return;
+        directoryPath+='/';
+        QDir dir;
+        dir.mkpath(directoryPath+name);
+        QString framePath=directoryPath+name+"/simulation";
+        dir.mkdir(framePath);
+        framePath+="/frame";
+        QString trajectoriesPath=directoryPath+name+"/trajectories";
+        dir.mkdir(trajectoriesPath);
+        trajectoriesPath+="/particle";
+
         clearTrajects();
         for(int i=0;i<particles.size();i++) trajects.push_back(new QImage(boundX,boundY,QImage::Format_RGB888));
-
         for(int i=0;i<particles.size();i++) updateAccn(particles[i]);
         QImage* buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
+        int padding=numDigits(duration*30-1);
         updateBuffer(buffer);
-        imgSeq.push_back(buffer);
-        qDebug()<<"Iteration: 0"<<"   time: "<<time<<"     complete";
+        QString temp=framePath;
+        for(int i=0;i<padding;i++) temp+='0';
+        buffer->save(temp+".png","",100);
+        qDebug()<<temp+".png"<<" saved";
+        int frame=1;
 
         for(int i=1;i<iterations*duration;i++){
             for(int j=0;j<particles.size();j++){
@@ -317,11 +290,14 @@ public:
                 updateTraject(j);
             }
             if(i%(iterations/30)==0){
-                buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
                 updateBuffer(buffer);
-                imgSeq.push_back(buffer);
+                QString fileName=framePath;
+                for(int j=0;j<padding-numDigits(frame);j++) fileName+='0';
+                fileName+=QString::number(frame)+".png";
+                buffer->save(fileName,"",100);
+                qDebug()<<fileName<<" saved";
+                frame++;
             }
-            qDebug()<<"Iteration: "<<i<<"   time: "<<time<<"     complete";
         }
         for(int i=0;i<trajects.size();i++){
             blur(*trajects[i],2);
@@ -334,31 +310,10 @@ public:
                 trajects[i]->setPixelColor(x,boundY-1,Qt::red);
             }
         }
-        qDebug()<<"Simulation Complete";
-    }
-    void writeSimulation(){
-        QWidget widget;
-        QString directory=QFileDialog::getExistingDirectory(&widget,"Select Directory");
-        QDir dir;
-        dir.mkdir(directory+'/'+name);
-        directory+='/'+name+'/';
-        QString frame=directory+"simulation/frame";
-        QString trajectories=directory+"trajectories/particle";
-        dir.mkdir(directory+"simulation");
-        dir.mkdir(directory+"trajectories");
-
-        int padding=numDigits(imgSeq.size()-1);
-        for(int i=0;i<imgSeq.size();i++){
-            QString fileName=frame;
-            for(int j=0;j<padding-numDigits(i);j++) fileName+='0';
-            fileName+=QString::number(i)+".png";
-            imgSeq[i]->save(fileName,"",100);
-            qDebug()<<fileName<<" saved";
-        }
+        delete buffer;
         for(int i=0;i<trajects.size();i++){
-            QString fileName=trajectories+QString::number(i)+".png";
-            trajects[i]->save(fileName,"",100);
-            qDebug()<<fileName<<" saved";
+            trajects[i]->save(trajectoriesPath+QString::number(i)+".png","",100);
+            qDebug()<<trajectoriesPath+QString::number(i)+".png"<<" saved";
         }
     }
 };

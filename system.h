@@ -21,6 +21,33 @@ int numDigits(int n){
     return ans;
 }
 
+void blur(QImage&img,int radius=1){
+    int width = img.width(), height = img.height();
+    QImage img1(width,height,img.format());
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            int r = 0, g = 0, b = 0;
+            int num = 0;
+            for (int di = -radius; di <= radius; di++) {
+                for (int dj = -radius; dj <= radius; dj++) {
+                    if (i + di < 0 || i + di >= height) continue;
+                    if (j + dj < 0 || j + dj >= width) continue;
+                    QColor c=img.pixelColor(j+dj,i+di);
+                    r += c.red();
+                    g += c.green();
+                    b += c.blue();
+                    num++;
+                }
+            }
+            r /= num;
+            g /= num;
+            b /= num;
+            img1.setPixelColor(j,i,QColor(r,g,b,img.pixelColor(j,i).alpha()));
+        }
+    }
+    img=img1;
+}
+
 class particle{
     float ax,ay;
     float vx,vy;
@@ -143,6 +170,7 @@ class System{
     vector<particle*> particles;
     vector<field*> fields;
     vector<QImage*> imgSeq;
+    vector<QImage*> trajects;
     float scale;// 1px corresponds to scale meters
     int boundX,boundY;//in px
     int iterations;//per second and must be a multiple of 30(fps)
@@ -151,6 +179,7 @@ class System{
     float dt;// 1/iterations
     float time;
     float visc_k;
+    QString name;
 
     void updateAccn(particle*p){
         p->setAx(0);
@@ -170,32 +199,6 @@ class System{
         }
         p->setAx(p->Ax() - visc_k*p->Vx()/p->M());
         p->setAy(p->Ay() - visc_k*p->Vy()/p->M());
-    }
-    void blur(QImage&img,int radius=1){
-            int width = img.width(), height = img.height();
-            QImage img1(width,height,img.format());
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    int r = 0, g = 0, b = 0;
-                    int num = 0;
-                    for (int di = -radius; di <= radius; di++) {
-                        for (int dj = -radius; dj <= radius; dj++) {
-                            if (i + di < 0 || i + di >= height) continue;
-                            if (j + dj < 0 || j + dj >= width) continue;
-                            QColor c=img.pixelColor(j+dj,i+di);
-                            r += c.red();
-                            g += c.green();
-                            b += c.blue();
-                            num++;
-                        }
-                    }
-                    r /= num;
-                    g /= num;
-                    b /= num;
-                    img1.setPixelColor(j,i,QColor(r,g,b,img.pixelColor(j,i).alpha()));
-                }
-            }
-            img=img1;
     }
     void updateBuffer(QImage*buffer){
         for(int y=0;y<boundY;y++){
@@ -223,9 +226,21 @@ class System{
             buffer->setPixelColor(x,boundY-1,Qt::red);
         }
     }
+    void updateTraject(int i){
+        particle*p=particles[i];
+        int x=p->X()/scale;
+        int y=p->Y()/scale;
+        for(int dy=-p->TrajectRadius();dy<=p->TrajectRadius();dy++){
+            for(int dx=-p->TrajectRadius();dx<=p->TrajectRadius();dx++){
+                if(x+dx<0 || x+dx>=boundX) continue;
+                if(y+dy<0 || y+dy>=boundY) continue;
+                trajects[i]->setPixelColor(x+dx,boundY-y-dy-1,p->Color());
+            }
+        }
+    }
 public:
-    System(float scale = 1, int boundX = 100, int boundY = 100, int iterations = 300, int duration = 1, float timeFactor = 1, float visc_k = 0)
-            :scale(scale), boundX(boundX), boundY(boundY), iterations(iterations), duration(duration), timeFactor(timeFactor), visc_k(visc_k)
+    System(QString name="sim",float scale = 1, int boundX = 100, int boundY = 100, int iterations = 300, int duration = 1, float timeFactor = 1, float visc_k = 0)
+            :scale(scale), boundX(boundX), boundY(boundY), iterations(iterations), duration(duration), timeFactor(timeFactor), visc_k(visc_k),name(name)
     {
             time = 0;
             dt = ((float)1 / iterations) * timeFactor;
@@ -234,6 +249,7 @@ public:
         clearParticles();
         clearFields();
         clearImgBuffer();
+        clearTrajects();
     }
     //getters
     float Scale(){return scale;}
@@ -245,6 +261,7 @@ public:
     float Dt(){return dt;}
     float Time(){return time;}
     float Visc_K(){return visc_k;}
+    QString Name(){return name;}
     //setters
     void setScale(float scale){this->scale=scale;}
     void setBoundX(int boundX){this->boundX=boundX;}
@@ -253,6 +270,7 @@ public:
     void setDuration(int duration){this->duration=duration;}
     void setTimeFactor(float timeFactor){this->timeFactor=timeFactor;}
     void setVisc_K(float visc_k){this->visc_k=visc_k;}
+    void setName(QString name){this->name=name;}
 
     void clearParticles(){
         for(int i=0;i<particles.size();i++) delete particles[i];
@@ -266,10 +284,17 @@ public:
         for(int i=0;i<imgSeq.size();i++) delete imgSeq[i];
         imgSeq.clear();
     }
+    void clearTrajects(){
+        for(int i=0;i<trajects.size();i++) delete trajects[i];
+        trajects.clear();
+    }
     void addParticle(particle*p){particles.push_back(p);}
     void addField(field*f){fields.push_back(f);}
 
     void simulate(){
+        clearTrajects();
+        for(int i=0;i<particles.size();i++) trajects.push_back(new QImage(boundX,boundY,QImage::Format_RGB888));
+
         for(int i=0;i<particles.size();i++) updateAccn(particles[i]);
         QImage* buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
         updateBuffer(buffer);
@@ -287,7 +312,10 @@ public:
                 p->setVx(pc.Vx() + pc.Ax()*dt);
                 p->setVy(pc.Vy() + pc.Ay()*dt);
             }
-            for(int j=0;j<particles.size();j++) updateAccn(particles[j]);
+            for(int j=0;j<particles.size();j++){
+                updateAccn(particles[j]);
+                updateTraject(j);
+            }
             if(i%(iterations/30)==0){
                 buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
                 updateBuffer(buffer);
@@ -295,18 +323,42 @@ public:
             }
             qDebug()<<"Iteration: "<<i<<"   time: "<<time<<"     complete";
         }
+        for(int i=0;i<trajects.size();i++){
+            blur(*trajects[i],2);
+            for(int y=0;y<boundY;y++){
+                trajects[i]->setPixelColor(0,y,Qt::red);
+                trajects[i]->setPixelColor(boundX-1,y,Qt::red);
+            }
+            for(int x=0;x<boundX;x++){
+                trajects[i]->setPixelColor(x,0,Qt::red);
+                trajects[i]->setPixelColor(x,boundY-1,Qt::red);
+            }
+        }
         qDebug()<<"Simulation Complete";
     }
     void writeSimulation(){
-        QWidget w;
-        QString dir=QFileDialog::getExistingDirectory(&w,"Select Directory","");
-        dir+="/frame";
+        QWidget widget;
+        QString directory=QFileDialog::getExistingDirectory(&widget,"Select Directory");
+        QDir dir;
+        dir.mkdir(directory+'/'+name);
+        directory+='/'+name+'/';
+        QString frame=directory+"simulation/frame";
+        QString trajectories=directory+"trajectories/particle";
+        dir.mkdir(directory+"simulation");
+        dir.mkdir(directory+"trajectories");
+
         int padding=numDigits(imgSeq.size()-1);
         for(int i=0;i<imgSeq.size();i++){
-            QString fileName=dir;
+            QString fileName=frame;
             for(int j=0;j<padding-numDigits(i);j++) fileName+='0';
             fileName+=QString::number(i)+".png";
             imgSeq[i]->save(fileName,"",100);
+            qDebug()<<fileName<<" saved";
+        }
+        for(int i=0;i<trajects.size();i++){
+            QString fileName=trajectories+QString::number(i)+".png";
+            trajects[i]->save(fileName,"",100);
+            qDebug()<<fileName<<" saved";
         }
     }
 };

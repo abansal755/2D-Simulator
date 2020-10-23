@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 float distance(float x1, float y1, float x2, float y2) {
     return sqrt(pow(x1 - x2, 2) + pow((y1 - y2), 2));
@@ -41,6 +40,8 @@ void blur(QImage&img,int radius=1){
     }
     img=img1;
 }
+
+int particleListItem::index=0;
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);

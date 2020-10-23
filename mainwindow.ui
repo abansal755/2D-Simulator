@@ -181,11 +181,21 @@
          <attribute name="title">
           <string>Particles</string>
          </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="listWidget" name="widget" native="true"/>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
           <string>Fields</string>
          </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="listWidget" name="widget_2" native="true"/>
+          </item>
+         </layout>
         </widget>
        </widget>
       </item>
@@ -229,6 +239,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>listWidget</class>
+   <extends>QWidget</extends>
+   <header>list.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

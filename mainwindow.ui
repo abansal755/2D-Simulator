@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>2D Simulator</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -192,7 +192,7 @@
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="listWidget" name="widget" native="true"/>
+           <widget class="particlesListWidget" name="widget" native="true"/>
           </item>
          </layout>
         </widget>
@@ -202,7 +202,7 @@
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="listWidget" name="widget_2" native="true"/>
+           <widget class="fieldsListWidget" name="widget_2" native="true"/>
           </item>
          </layout>
         </widget>
@@ -250,7 +250,13 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>listWidget</class>
+   <class>particlesListWidget</class>
+   <extends>QWidget</extends>
+   <header>list.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>fieldsListWidget</class>
    <extends>QWidget</extends>
    <header>list.h</header>
    <container>1</container>

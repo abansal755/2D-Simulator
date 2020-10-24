@@ -204,7 +204,6 @@ public:
     System(QString name="sim",float scale = 1, int boundX = 100, int boundY = 100, int iterations = 300, int duration = 1, float timeFactor = 1, float visc_k = 0)
             :scale(scale), boundX(boundX), boundY(boundY), iterations(iterations), duration(duration), timeFactor(timeFactor), visc_k(visc_k),name(name)
     {
-            time = 0;
             dt = ((float)1 / iterations) * timeFactor;
     }
     ~System(){
@@ -227,9 +226,15 @@ public:
     void setScale(float scale){this->scale=scale;}
     void setBoundX(int boundX){this->boundX=boundX;}
     void setBoundY(int boundY){this->boundY=boundY;}
-    void setIterations(int iterations){this->iterations=iterations;}
+    void setIterations(int iterations){
+        this->iterations=iterations;
+        dt = ((float)1 / iterations) * timeFactor;
+    }
     void setDuration(int duration){this->duration=duration;}
-    void setTimeFactor(float timeFactor){this->timeFactor=timeFactor;}
+    void setTimeFactor(float timeFactor){
+        this->timeFactor=timeFactor;
+        dt = ((float)1 / iterations) * timeFactor;
+    }
     void setVisc_K(float visc_k){this->visc_k=visc_k;}
     void setName(QString name){this->name=name;}
 
@@ -249,6 +254,7 @@ public:
     void addField(field*f){fields.push_back(f);}
 
     void simulate(){
+        time = 0;
         QWidget widget;
         QString directoryPath=QFileDialog::getExistingDirectory(&widget,"Select Directory");
         if(directoryPath=="") return;

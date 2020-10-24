@@ -42,11 +42,50 @@ void blur(QImage&img,int radius=1){
 }
 
 int particleListItem::index=0;
+int gravitationalRadialFieldListItem::index=0;
+int gravitationalUniformFieldListItem::index=0;
+int electricRadialFieldListItem::index=0;
+int electricUniformFieldListItem::index=0;
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindow){
     ui->setupUi(this);
+    ui->doubleSpinBox->setRange(FLT_MIN,FLT_MAX);
+    ui->doubleSpinBox_2->setRange(FLT_MIN,FLT_MAX);
+    ui->doubleSpinBox_3->setRange(FLT_MIN,FLT_MAX);
+
+    ui->doubleSpinBox->setDecimals(10);
+    ui->doubleSpinBox_2->setDecimals(10);
+    ui->doubleSpinBox_2->setDecimals(10);
 }
 
 MainWindow::~MainWindow(){
     delete ui;
+}
+
+void MainWindow::on_pushButton_clicked(){
+    //Simulate button clicked
+    sys.setName(ui->lineEdit->text());
+    sys.setScale(ui->doubleSpinBox->value());
+    sys.setBoundX(ui->spinBox->value());
+    sys.setBoundY(ui->spinBox_2->value());
+    sys.setIterations(ui->spinBox_3->value());
+    sys.setDuration(ui->spinBox_4->value());
+    sys.setTimeFactor(ui->doubleSpinBox_2->value());
+    sys.setVisc_K(ui->doubleSpinBox_3->value());
+
+    int numParticles=ui->widget->getListWidget()->count();
+    int numFields=ui->widget_2->getListWidget()->count();
+
+    sys.clearParticles();
+    sys.clearFields();
+
+    for(int i=0;i<numParticles;i++){
+        particlePropertiesWindow*p=(particlePropertiesWindow*)((particleListItem*)ui->widget->getListWidget()->item(i))->getPropertiesWindow();
+        sys.addParticle(p->createParticle());
+    }
+    for(int i=0;i<numFields;i++){
+        fieldPropertiesWindow*f=(fieldPropertiesWindow*)(((fieldListItem*)ui->widget_2->getListWidget()->item(i))->getPropertiesWindow());
+        sys.addField(f->createField());
+    }
+    sys.simulate();
 }

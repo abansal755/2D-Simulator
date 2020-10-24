@@ -2,6 +2,7 @@
 #include<QImage>
 #include<QDebug>
 #include<QFileDialog>
+#include"progress.h"
 using namespace std;
 
 const float _G = 6.67259e-11;
@@ -152,8 +153,8 @@ class System{
         }
         for(int i=0;i<particles.size();i++){
             if(particles[i]==p) continue;
-            field gf=GRF(*particles[i]);
-            field ef=ERF(*particles[i]);
+            GRF gf(*particles[i]);
+            ERF ef(*particles[i]);
             p->setAx(p->Ax() + gf.Ax(*p));
             p->setAy(p->Ay() + gf.Ay(*p));
             p->setAx(p->Ax() + ef.Ax(*p));
@@ -268,6 +269,10 @@ public:
         dir.mkdir(trajectoriesPath);
         trajectoriesPath+="/particle";
 
+        qualityFactorDialog dialog;
+        if(dialog.exec() == QDialog::Rejected) return;
+        int factor=dialog.getValue();
+
         clearTrajects();
         for(int i=0;i<particles.size();i++) trajects.push_back(new QImage(boundX,boundY,QImage::Format_RGB888));
         for(int i=0;i<particles.size();i++) updateAccn(particles[i]);
@@ -276,7 +281,7 @@ public:
         updateBuffer(buffer);
         QString temp=framePath;
         for(int i=0;i<padding;i++) temp+='0';
-        buffer->save(temp+".png","",100);
+        buffer->save(temp+".png","",factor);
         qDebug()<<temp+".png"<<" saved";
         int frame=1;
 
@@ -300,7 +305,7 @@ public:
                 QString fileName=framePath;
                 for(int j=0;j<padding-numDigits(frame);j++) fileName+='0';
                 fileName+=QString::number(frame)+".png";
-                buffer->save(fileName,"",100);
+                buffer->save(fileName,"",factor);
                 qDebug()<<fileName<<" saved";
                 frame++;
             }
@@ -318,7 +323,7 @@ public:
         }
         delete buffer;
         for(int i=0;i<trajects.size();i++){
-            trajects[i]->save(trajectoriesPath+QString::number(i)+".png","",100);
+            trajects[i]->save(trajectoriesPath+QString::number(i)+".png","",factor);
             qDebug()<<trajectoriesPath+QString::number(i)+".png"<<" saved";
         }
     }

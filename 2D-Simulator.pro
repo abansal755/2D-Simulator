@@ -17,15 +17,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    sliderint.cpp
 
 HEADERS += \
     list.h \
     mainwindow.h \
-    system.h
+    progress.h \
+    system.h \
+    sliderint.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    sliderint.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

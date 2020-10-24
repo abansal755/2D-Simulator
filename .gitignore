@@ -6,4 +6,5 @@ Makefile
 Makefile.debug
 Makefile.Release
 ui_mainwindow.h
+ui_sliderint.h
 usersakshitappdatalocaltemptmplxci5u

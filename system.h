@@ -19,7 +19,7 @@ class particle{
     int radius,trajectRadius;
     QColor color;
 public:
-    particle(float vx=0,float vy=0,float x=0,float y=0,float q=0,float m=0,int radius=5,int trajectRadius=5,QColor color=Qt::white)
+    particle(float vx=0,float vy=0,float x=0,float y=0,float q=0,float m=0,int radius=5,int trajectRadius=3,QColor color=Qt::white)
         :ax(0),ay(0),vx(vx),vy(vy),x(x),y(y),q(q),m(m),radius(radius),trajectRadius(trajectRadius),color(color){}
     //getters
     float Ax(){return ax;}

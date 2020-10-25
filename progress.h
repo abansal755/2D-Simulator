@@ -30,6 +30,17 @@ public:
 
         connect(b1,SIGNAL(accepted()),this,SLOT(accept()));
         connect(b1,SIGNAL(rejected()),this,SLOT(reject()));
+
+        setStyleSheet("QWidget{background-color: rgb(30,30,30);color:rgb(231,231,231);font: 800 10pt ""Consolas"";border: 0px;}"
+                      "QWidget#centralwidget{background-color: rgb(37,37,37);}"
+                      "QSpinBox{background:rgb(60,60,60);padding: 5px;font: 10pt ""Consolas"";}"
+                      "QSpinBox:focus{border: 1px solid rgb(0,127,212);}"
+                      "QDoubleSpinBox{background:rgb(60,60,60);padding: 3px;font: 10pt ""Consolas"";}"
+                      "QDoubleSpinBox:focus{border: 1px solid rgb(0,127,212);}"
+                      "QPushButton{background-color:rgb(14,99,156);color: white;padding: 10px;}"
+                      "QPushButton:disabled{background-color:rgb(77,77,77);}"
+                      "QPushButton:hover{background-color:rgb(17,119,187);}"
+                      );
     }
     int getValue(){
         return slider1->getValue();

@@ -49,6 +49,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pushButton">
+     <property name="styleSheet">
+      <string notr="true">padding: 20px;</string>
+     </property>
      <property name="text">
       <string>Reset</string>
      </property>

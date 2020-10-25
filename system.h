@@ -259,6 +259,11 @@ public:
         QWidget widget;
         QString directoryPath=QFileDialog::getExistingDirectory(&widget,"Select Directory");
         if(directoryPath=="") return;
+
+        qualityFactorDialog dialog;
+        if(dialog.exec() == QDialog::Rejected) return;
+        int factor=dialog.getValue();
+
         directoryPath+='/';
         QDir dir;
         dir.mkpath(directoryPath+name);
@@ -269,9 +274,6 @@ public:
         dir.mkdir(trajectoriesPath);
         trajectoriesPath+="/particle";
 
-        qualityFactorDialog dialog;
-        if(dialog.exec() == QDialog::Rejected) return;
-        int factor=dialog.getValue();
 
         clearTrajects();
         for(int i=0;i<particles.size();i++) trajects.push_back(new QImage(boundX,boundY,QImage::Format_RGB888));

@@ -229,7 +229,7 @@ public:
 
 class listWidget:public QWidget{
     QListWidget*lw1;
-    QVBoxLayout*v1;
+    QHBoxLayout*h1;
     Q_OBJECT
 protected slots:
     virtual void newClicked(){}
@@ -247,23 +247,25 @@ protected slots:
         }
     }
 public:
-    QHBoxLayout*h1;
+    QVBoxLayout*v1,*v2;
     QPushButton*b1,*b2,*b3;
     listWidget(QWidget*parent=NULL):QWidget(parent){
         lw1=new QListWidget(this);
         v1=new QVBoxLayout;
+        v2=new QVBoxLayout;
         h1=new QHBoxLayout;
         b1=new QPushButton("New");
         b2=new QPushButton("Edit");
         b3=new QPushButton("Delete");
 
-        h1->addStretch();
-        h1->addWidget(b1);
-        h1->addWidget(b2);
-        h1->addWidget(b3);
         v1->addWidget(lw1);
-        v1->addLayout(h1);
-        setLayout(v1);
+        v2->addWidget(b1);
+        v2->addWidget(b2);
+        v2->addWidget(b3);
+        v2->addStretch();
+        h1->addLayout(v1);
+        h1->addLayout(v2);
+        setLayout(h1);
 
         connect(b1,SIGNAL(clicked()),this,SLOT(newClicked()));
         connect(b2,SIGNAL(clicked()),this,SLOT(editClicked()));
@@ -319,9 +321,9 @@ public:
         b4=new QPushButton("New Gravitational Uniform Field",this);
         b5=new QPushButton("New Electric Radial Field",this);
         b6=new QPushButton("New Electric Uniform Field",this);
-        h1->insertWidget(2,b4);
-        h1->insertWidget(3,b5);
-        h1->insertWidget(4,b6);
+        v2->insertWidget(1,b4);
+        v2->insertWidget(2,b5);
+        v2->insertWidget(3,b6);
 
         connect(b4,SIGNAL(clicked()),this,SLOT(b4Clicked()));
         connect(b5,SIGNAL(clicked()),this,SLOT(b5Clicked()));

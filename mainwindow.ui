@@ -116,7 +116,7 @@
          <item row="7" column="0">
           <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>Viscosity</string>
+            <string>Viscosity:</string>
            </property>
           </widget>
          </item>

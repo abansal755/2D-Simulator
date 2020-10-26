@@ -17,7 +17,7 @@
    <string notr="true">QWidget{
 	background-color: rgb(30,30,30);
 	color:rgb(231,231,231);
-	font: 800 10pt &quot;Consolas&quot;;
+	font: 800 11pt &quot;Calibri&quot;;
 	border: 0px;
 }
 
@@ -37,7 +37,7 @@ QGroupBox::title{
 QLineEdit{
 	background:rgb(60,60,60);
 	padding: 3px;
-	font: 10pt &quot;Consolas&quot;;
+	font: 11pt &quot;Calibri&quot;;
 }
 
 QLineEdit:focus{
@@ -47,7 +47,7 @@ QLineEdit:focus{
 QSpinBox{
 	background:rgb(60,60,60);
 	padding: 5px;
-	font: 10pt &quot;Consolas&quot;;
+	font: 11pt &quot;Calibri&quot;;
 }
 
 QSpinBox:focus{
@@ -57,7 +57,7 @@ QSpinBox:focus{
 QDoubleSpinBox{
 	background:rgb(60,60,60);
 	padding: 3px;
-	font: 10pt &quot;Consolas&quot;;
+	font: 11pt &quot;Calibri&quot;;
 }
 
 QDoubleSpinBox:focus{
@@ -325,7 +325,7 @@ QTabBar::tab::selected{
      <x>0</x>
      <y>0</y>
      <width>836</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

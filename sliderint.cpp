@@ -7,6 +7,7 @@ sliderInt::sliderInt(QWidget *parent) :
 {
     ui->setupUi(this);
     defaultValue=0;
+    ui->spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
 }
 
 sliderInt::~sliderInt()

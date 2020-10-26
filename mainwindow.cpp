@@ -41,6 +41,25 @@ void blur(QImage&img,int radius=1){
     img=img1;
 }
 
+void QSS(QWidget*widget){
+    widget->setStyleSheet("QWidget{background-color: rgb(30,30,30);color:rgb(231,231,231);font: 800 11pt ""Calibri"";border: 0px;}"
+                           "QWidget#centralwidget{background-color: rgb(37,37,37);}"
+                           "QGroupBox{padding: 20px 0px;background-color: rgb(30,30,30);}"
+                           "QGroupBox::title{subcontrol-position: top center;}"
+                           "QLineEdit{background:rgb(60,60,60);padding: 3px;font: 11pt ""Calibri"";}"
+                           "QLineEdit:focus{border: 1px solid rgb(0,127,212);}"
+                           "QSpinBox{background:rgb(60,60,60);padding: 5px;font: 11pt ""Calibri"";}"
+                           "QSpinBox:focus{border: 1px solid rgb(0,127,212);}"
+                           "QDoubleSpinBox{background:rgb(60,60,60);padding: 3px;font: 11pt ""Calibri"";}"
+                           "QDoubleSpinBox:focus{border: 1px solid rgb(0,127,212);}"
+                           "QPushButton{background-color:rgb(14,99,156);color: white;padding: 10px;}"
+                           "QPushButton:disabled{background-color:rgb(77,77,77);}"
+                           "QPushButton:hover{background-color:rgb(17,119,187);}"
+                           "QTabWidget::pane{border: 0px;}"
+                           "QTabBar::tab{background: rgb(45,45,45);}"
+                           "QTabBar::tab::selected{background: rgb(30,30,30);}");
+}
+
 int particleListItem::index=0;
 int gravitationalRadialFieldListItem::index=0;
 int gravitationalUniformFieldListItem::index=0;
@@ -56,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
     ui->doubleSpinBox->setDecimals(10);
     ui->doubleSpinBox_2->setDecimals(10);
     ui->doubleSpinBox_2->setDecimals(10);
+
+    QSS(this);
 }
 
 MainWindow::~MainWindow(){

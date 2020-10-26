@@ -37,8 +37,14 @@ public:
         label[5]=new QLabel("m:");
         label[6]=new QLabel("radius:");
         label[7]=new QLabel("trajectRadius:");
-        for(int i=0;i<6;i++) doubleSpinBox[i]=new QDoubleSpinBox;
-        for(int i=0;i<2;i++) spinBox[i]=new QSpinBox;
+        for(int i=0;i<6;i++){
+            doubleSpinBox[i]=new QDoubleSpinBox;
+            doubleSpinBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        }
+        for(int i=0;i<2;i++){
+            spinBox[i]=new QSpinBox;
+            spinBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        }
         for(int i=0;i<6;i++){
             doubleSpinBox[i]->setRange(-FLT_MAX,FLT_MAX);
             doubleSpinBox[i]->setDecimals(10);
@@ -91,7 +97,10 @@ public:
     radialFieldPropertiesWindow(QString title,QWidget*parent=NULL):fieldPropertiesWindow(title,parent){
         v1=new QVBoxLayout;
         for(int i=0;i<2;i++) hBox[i]=new QHBoxLayout;
-        for(int i=0;i<3;i++) spinBox[i]=new QDoubleSpinBox;
+        for(int i=0;i<3;i++){
+            spinBox[i]=new QDoubleSpinBox;
+            spinBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        }
         label[0]=new QLabel("cx:");
         label[1]=new QLabel("cy:");
         label[2]=new QLabel("k:");
@@ -142,6 +151,7 @@ public:
             spinBox[i]=new QDoubleSpinBox;
             spinBox[i]->setRange(-FLT_MAX,FLT_MAX);
             spinBox[i]->setDecimals(10);
+            spinBox[i]->setButtonSymbols(QAbstractSpinBox::NoButtons);
         }
         label[0]=new QLabel("ex:");
         label[1]=new QLabel("ey:");

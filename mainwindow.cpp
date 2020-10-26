@@ -78,6 +78,14 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
     ui->doubleSpinBox_2->setDecimals(10);
 
     QSS(this);
+
+    ui->doubleSpinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    ui->doubleSpinBox_2->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    ui->doubleSpinBox_3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    ui->spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    ui->spinBox_2->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    ui->spinBox_3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    ui->spinBox_4->setButtonSymbols(QAbstractSpinBox::NoButtons);
 }
 
 MainWindow::~MainWindow(){

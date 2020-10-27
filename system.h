@@ -2,7 +2,7 @@
 #include<QImage>
 #include<QDebug>
 #include<QFileDialog>
-#include"progress.h"
+#include"qualityFactorDialog.h"
 using namespace std;
 
 const float _G = 6.67259e-11;

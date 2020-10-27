@@ -23,7 +23,7 @@ SOURCES += \
 HEADERS += \
     list.h \
     mainwindow.h \
-    progress.h \
+    qualityFactorDialog.h \
     system.h \
     sliderint.h
 

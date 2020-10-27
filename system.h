@@ -8,6 +8,8 @@ using namespace std;
 const float _G = 6.67259e-11;
 const float _K = 9e9;
 
+#define SAVE_LOG(x) qDebug()<<x<<" saved";
+
 float distance(float x1, float y1, float x2, float y2);
 int numDigits(int n);
 void blur(QImage&img,int radius);
@@ -283,11 +285,11 @@ public:
 
 
         clearTrajects();
-        stats.clear();
         for(int i=0;i<particles.size();i++) trajects.push_back(new QImage(boundX,boundY,QImage::Format_RGB888));
         for(int i=0;i<particles.size();i++){
             QString temp=statsPath+particles[i]->Id()+".txt";
             stats.push_back(ofstream(temp.toStdString()));
+            SAVE_LOG(temp)
             stats[i]<<"time x y vx vy ax ay\n";
         }
         for(int i=0;i<particles.size();i++) updateAccn(particles[i]);
@@ -297,8 +299,11 @@ public:
         QString temp=framePath;
         for(int i=0;i<padding;i++) temp+='0';
         buffer->save(temp+".png","",factor);
-        for(int i=0;i<stats.size();i++) stats[i]<<time<<' '<<particles[i]->X()<<' '<<particles[i]->Y()<<' '<<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '<<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
-        qDebug()<<temp+".png"<<" saved";
+        for(int i=0;i<stats.size();i++) stats[i]<<time<<' '
+                                                <<particles[i]->X()<<' '<<particles[i]->Y()<<' '
+                                                <<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '
+                                                <<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
+        SAVE_LOG(temp+".png")
         int frame=1;
 
         for(int i=1;i<iterations*duration;i++){
@@ -322,8 +327,11 @@ public:
                 for(int j=0;j<padding-numDigits(frame);j++) fileName+='0';
                 fileName+=QString::number(frame)+".png";
                 buffer->save(fileName,"",factor);
-                for(int i=0;i<stats.size();i++) stats[i]<<time<<' '<<particles[i]->X()<<' '<<particles[i]->Y()<<' '<<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '<<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
-                qDebug()<<fileName<<" saved";
+                for(int i=0;i<stats.size();i++) stats[i]<<time<<' '
+                                                        <<particles[i]->X()<<' '<<particles[i]->Y()<<' '
+                                                        <<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '
+                                                        <<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
+                SAVE_LOG(fileName)
                 frame++;
             }
         }
@@ -341,7 +349,8 @@ public:
         delete buffer;
         for(int i=0;i<trajects.size();i++){
             trajects[i]->save(trajectoriesPath+particles[i]->Id()+".png","",factor);
-            qDebug()<<trajectoriesPath+particles[i]->Id()+".png"<<" save";
+            SAVE_LOG(trajectoriesPath+particles[i]->Id()+".png")
         }
+        stats.clear();
     }
 };

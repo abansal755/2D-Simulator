@@ -137,6 +137,7 @@ class System{
     vector<particle*> particles;
     vector<field*> fields;
     vector<QImage*> trajects;
+    vector<ofstream> stats;
     float scale;// 1px corresponds to scale meters
     int boundX,boundY;//in px
     int iterations;//per second and must be a multiple of 30(fps)
@@ -276,10 +277,19 @@ public:
         QString trajectoriesPath=directoryPath+name+"/trajectories";
         dir.mkdir(trajectoriesPath);
         trajectoriesPath+='/';
+        QString statsPath=directoryPath+name+"/statistics";
+        dir.mkdir(statsPath);
+        statsPath+='/';
 
 
         clearTrajects();
+        stats.clear();
         for(int i=0;i<particles.size();i++) trajects.push_back(new QImage(boundX,boundY,QImage::Format_RGB888));
+        for(int i=0;i<particles.size();i++){
+            QString temp=statsPath+particles[i]->Id()+".txt";
+            stats.push_back(ofstream(temp.toStdString()));
+            stats[i]<<"time x y vx vy ax ay\n";
+        }
         for(int i=0;i<particles.size();i++) updateAccn(particles[i]);
         QImage* buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
         int padding=numDigits(duration*30-1);
@@ -287,6 +297,7 @@ public:
         QString temp=framePath;
         for(int i=0;i<padding;i++) temp+='0';
         buffer->save(temp+".png","",factor);
+        for(int i=0;i<stats.size();i++) stats[i]<<time<<' '<<particles[i]->X()<<' '<<particles[i]->Y()<<' '<<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '<<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
         qDebug()<<temp+".png"<<" saved";
         int frame=1;
 
@@ -311,6 +322,7 @@ public:
                 for(int j=0;j<padding-numDigits(frame);j++) fileName+='0';
                 fileName+=QString::number(frame)+".png";
                 buffer->save(fileName,"",factor);
+                for(int i=0;i<stats.size();i++) stats[i]<<time<<' '<<particles[i]->X()<<' '<<particles[i]->Y()<<' '<<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '<<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
                 qDebug()<<fileName<<" saved";
                 frame++;
             }

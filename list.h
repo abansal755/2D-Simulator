@@ -74,7 +74,8 @@ public:
         connect(b1,SIGNAL(clicked()),cd,SLOT(exec()));
     }
     particle* createParticle(){
-        return new particle(doubleSpinBox[2]->value(),doubleSpinBox[3]->value(),
+        return new particle(windowTitle(),
+                            doubleSpinBox[2]->value(),doubleSpinBox[3]->value(),
                             doubleSpinBox[0]->value(),doubleSpinBox[1]->value(),
                             doubleSpinBox[4]->value(),doubleSpinBox[5]->value(),
                             spinBox[0]->value(),spinBox[1]->value(),

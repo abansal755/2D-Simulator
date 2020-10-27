@@ -13,6 +13,7 @@ int numDigits(int n);
 void blur(QImage&img,int radius);
 
 class particle{
+    QString id;
     float ax,ay;
     float vx,vy;
     float x,y;
@@ -20,9 +21,10 @@ class particle{
     int radius,trajectRadius;
     QColor color;
 public:
-    particle(float vx=0,float vy=0,float x=0,float y=0,float q=0,float m=0,int radius=5,int trajectRadius=3,QColor color=Qt::white)
-        :ax(0),ay(0),vx(vx),vy(vy),x(x),y(y),q(q),m(m),radius(radius),trajectRadius(trajectRadius),color(color){}
+    particle(QString id,float vx=0,float vy=0,float x=0,float y=0,float q=0,float m=0,int radius=5,int trajectRadius=3,QColor color=Qt::white)
+        :id(id),ax(0),ay(0),vx(vx),vy(vy),x(x),y(y),q(q),m(m),radius(radius),trajectRadius(trajectRadius),color(color){}
     //getters
+    QString Id(){return id;}
     float Ax(){return ax;}
     float Ay(){return ay;}
     float Vx(){return vx;}
@@ -35,6 +37,7 @@ public:
     int TrajectRadius(){return trajectRadius;}
     QColor Color(){return color;}
     //setters
+    void setId(QString id){this->id=id;}
     void setAx(float ax){this->ax=ax;}
     void setAy(float ay){this->ay=ay;}
     void setVx(float vx){this->vx=vx;}
@@ -272,7 +275,7 @@ public:
         framePath+="/frame";
         QString trajectoriesPath=directoryPath+name+"/trajectories";
         dir.mkdir(trajectoriesPath);
-        trajectoriesPath+="/particle";
+        trajectoriesPath+='/';
 
 
         clearTrajects();
@@ -325,8 +328,8 @@ public:
         }
         delete buffer;
         for(int i=0;i<trajects.size();i++){
-            trajects[i]->save(trajectoriesPath+QString::number(i)+".png","",factor);
-            qDebug()<<trajectoriesPath+QString::number(i)+".png"<<" saved";
+            trajects[i]->save(trajectoriesPath+particles[i]->Id()+".png","",factor);
+            qDebug()<<trajectoriesPath+particles[i]->Id()+".png"<<" save";
         }
     }
 };

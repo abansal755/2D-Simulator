@@ -327,13 +327,13 @@ public:
                 for(int j=0;j<padding-numDigits(frame);j++) fileName+='0';
                 fileName+=QString::number(frame)+".png";
                 buffer->save(fileName,"",factor);
-                for(int i=0;i<stats.size();i++) stats[i]<<time<<' '
-                                                        <<particles[i]->X()<<' '<<particles[i]->Y()<<' '
-                                                        <<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '
-                                                        <<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
                 SAVE_LOG(fileName)
                 frame++;
             }
+            for(int i=0;i<stats.size();i++) stats[i]<<time<<' '
+                                                    <<particles[i]->X()<<' '<<particles[i]->Y()<<' '
+                                                    <<particles[i]->Vx()<<' '<<particles[i]->Vy()<<' '
+                                                    <<particles[i]->Ax()<<' '<<particles[i]->Ay()<<'\n';
         }
         for(int i=0;i<trajects.size();i++){
             blur(*trajects[i],2);

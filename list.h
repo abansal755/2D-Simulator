@@ -286,6 +286,9 @@ public:
 
         b2->setDisabled(true);
         b3->setDisabled(true);
+
+        lw1->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+        lw1->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     }
     ~listWidget(){
         lw1->clear();

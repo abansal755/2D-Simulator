@@ -58,7 +58,14 @@ void QSS(QWidget*widget){
                           "QTabWidget::pane{border: 0px;}"
                           "QTabBar::tab{background: rgb(45,45,45);}"
                           "QTabBar::tab::selected{background: rgb(30,30,30);}"
-                          "QListWidget::item{padding:7px;}");
+                          "QListWidget::item{padding:7px;}"
+                          "QScrollBar::add-line{border:none;background:none}"
+                          "QScrollBar::sub-line{border:none;background:none}"
+                          "QScrollBar{background:solid rgb(30,30,30);border:2px solid rgb(57,57,57);}"
+                          "QScrollBar::handle{background:rgb(66,66,66);}"
+                          "QScrollBar::handle::hover{background:rgb(79,79,79);}"
+                          "QScrollBar::add-page{background:none;}"
+                          "QScrollBar::sub-page{background:none;}");
 }
 
 int particleListItem::index=0;

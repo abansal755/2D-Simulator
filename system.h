@@ -8,7 +8,7 @@ using namespace std;
 const float _G = 6.67259e-11;
 const float _K = 9e9;
 
-#define SAVE_LOG(x) qDebug()<<x<<" saved";
+#define SAVE_LOG(fileName) qDebug()<<fileName<<" saved";
 
 float distance(float x1, float y1, float x2, float y2);
 int numDigits(int n);
@@ -282,7 +282,19 @@ public:
         QString statsPath=directoryPath+name+"/statistics";
         dir.mkdir(statsPath);
         statsPath+='/';
+        QString settingsPath=directoryPath+'/'+name+"/settings.txt";
 
+        ofstream settingsFile(settingsPath.toStdString());
+        settingsFile<<"Simulation name = "<<name.toStdString()<<'\n'
+                    <<"Scale = "<<QString::number(scale).toStdString()<<'\n'
+                    <<"Width = "<<QString::number(boundX).toStdString()<<'\n'
+                    <<"Height = "<<QString::number(boundY).toStdString()<<'\n'
+                    <<"Iterations = "<<QString::number(iterations).toStdString()<<'\n'
+                    <<"Duration = "<<QString::number(duration).toStdString()<<'\n'
+                    <<"Time Factor = "<<QString::number(timeFactor).toStdString()<<'\n'
+                    <<"Viscosity = "<<QString::number(visc_k).toStdString();
+        settingsFile.close();
+        SAVE_LOG(settingsPath)
 
         clearTrajects();
         for(int i=0;i<particles.size();i++) trajects.push_back(new QImage(boundX,boundY,QImage::Format_RGB888));

@@ -284,9 +284,7 @@ class trie{
     }
     void removeWord(QString word,listItem*item,trieNode*root){
         if(word.isEmpty()){
-            for(auto it=root->ptr->begin();it!=root->ptr->end();it++){
-                if((*it)==item) root->ptr->erase(it);
-            }
+            root->ptr->erase(item);
             return;
         }
         int ind=index(word[0]);

@@ -292,7 +292,7 @@ class trie{
         int ind=index(word[0]);
         if(root->children[ind]==NULL) return;
         removeWord(word.mid(1),item,root->children[ind]);
-        if(root->children[ind]->ptr) return;
+        if(root->children[ind]->ptr->size()!=0) return;
         for(int i=0;i<36;i++){
             if(root->children[ind]->children[i]!=NULL) return;
         }
@@ -317,6 +317,7 @@ public:
         setWords(node);
     }
     void removeWord(QString word,listItem*item){
+        word=word.toLower();
         for(int i=0;i<word.length();i++) removeWord(word.mid(i),item,root);
     }
 };

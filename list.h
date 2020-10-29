@@ -243,15 +243,17 @@ public:
 class trieNode{
 public:
     QChar data;
-    listItem*ptr;
+    unordered_set<listItem*>*ptr;
     trieNode**children;
-    trieNode(QChar data):data(data),ptr(NULL){
+    trieNode(QChar data):data(data){
         children=new trieNode*[36];
         for(int i=0;i<36;i++) children[i]=NULL;
+        ptr=new unordered_set<listItem*>;
     }
     ~trieNode(){
         for(int i=0;i<36;i++) delete children[i];
         delete[]children;
+        delete ptr;
     }
 };
 
@@ -263,7 +265,7 @@ class trie{
     }
     void insertWord(QString word,listItem*item,trieNode*root){
         if(word.isEmpty()){
-            root->ptr=item;
+            root->ptr->insert(item);
             return;
         }
         int ind=index(word[0]);
@@ -277,17 +279,19 @@ class trie{
         return searchWord(word.mid(1),root->children[ind]);
     }
     void setWords(trieNode*root){
-        if(root->ptr) root->ptr->setHidden(false);
+        for(auto it=root->ptr->begin();it!=root->ptr->end();it++) (*it)->setHidden(false);
         for(int i=0;i<36;i++) if(root->children[i]) setWords(root->children[i]);
     }
-    void removeWord(QString word,trieNode*root){
+    void removeWord(QString word,listItem*item,trieNode*root){
         if(word.isEmpty()){
-            root->ptr=NULL;
+            for(auto it=root->ptr->begin();it!=root->ptr->end();it++){
+                if((*it)==item) root->ptr->erase(it);
+            }
             return;
         }
         int ind=index(word[0]);
         if(root->children[ind]==NULL) return;
-        removeWord(word.mid(1),root->children[ind]);
+        removeWord(word.mid(1),item,root->children[ind]);
         if(root->children[ind]->ptr) return;
         for(int i=0;i<36;i++){
             if(root->children[ind]->children[i]!=NULL) return;
@@ -312,8 +316,8 @@ public:
         if(node==NULL) return;
         setWords(node);
     }
-    void removeWord(QString word){
-        for(int i=0;i<word.length();i++) removeWord(word.mid(i),root);
+    void removeWord(QString word,listItem*item){
+        for(int i=0;i<word.length();i++) removeWord(word.mid(i),item,root);
     }
 };
 
@@ -327,8 +331,9 @@ protected slots:
     virtual void newClicked(){}
     virtual void editClicked(){}
     void deleteClicked(){
-        listItem*current=(listItem*)lw1->takeItem(lw1->currentRow());
-        searchTrie.removeWord(current->text());
+        listItem*current=(listItem*)lw1->currentItem();
+        searchTrie.removeWord(current->text(),current);
+        lw1->removeItemWidget(current);
         delete current;
     }
     void change(QListWidgetItem*current,QListWidgetItem*previous){

@@ -324,10 +324,11 @@ public:
 
 class listWidget:public QWidget{
     QListWidget*lw1;
-    QHBoxLayout*h1,*h2;
+    QVBoxLayout*v[2];
+    QPushButton*b[4];
+    QHBoxLayout*h[2];
     QLineEdit*edit1;
     trie searchTrie;
-    QPushButton*button1;
     Q_OBJECT
 protected slots:
     virtual void newClicked(){}
@@ -340,63 +341,58 @@ protected slots:
     }
     void change(QListWidgetItem*current,QListWidgetItem*previous){
         if(current==NULL){
-            b2->setDisabled(true);
-            b3->setDisabled(true);
+            b[1]->setDisabled(true);
+            b[2]->setDisabled(true);
         }else{
-            b2->setEnabled(true);
-            b3->setEnabled(true);
+            b[1]->setEnabled(true);
+            b[2]->setEnabled(true);
         }
     }
     void search(QString word){
         searchTrie.searchWord(word,lw1);
     }
 public:
-    QVBoxLayout*v1,*v2;
-    QPushButton*b1,*b2,*b3;
     listWidget(QWidget*parent=NULL):QWidget(parent){
         lw1=new QListWidget(this);
-        v1=new QVBoxLayout;
-        v2=new QVBoxLayout;
-        h1=new QHBoxLayout;
-        h2=new QHBoxLayout;
-        b1=new QPushButton("New");
-        b2=new QPushButton("Edit");
-        b3=new QPushButton("Delete");
-        edit1=new QLineEdit;
-        edit1->setPlaceholderText("Search");
-        button1=new QPushButton("X");
-        button1->setStyleSheet("QPushButton{padding:4px 10px;background-color:rgb(77,77,77);}"
-                               "QPushButton:hover{background-color:rgb(232,17,35);}");
-
-        h2->addWidget(edit1);
-        h2->addWidget(button1);
-        v1->addLayout(h2);
-        v1->addWidget(lw1);
-        v2->addWidget(b1);
-        v2->addWidget(b2);
-        v2->addWidget(b3);
-        v2->addStretch();
-        h1->addLayout(v1);
-        h1->addLayout(v2);
-        setLayout(h1);
-
-        connect(b1,SIGNAL(clicked()),this,SLOT(newClicked()));
-        connect(b2,SIGNAL(clicked()),this,SLOT(editClicked()));
-        connect(b3,SIGNAL(clicked()),this,SLOT(deleteClicked()));
-        connect(lw1,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SLOT(change(QListWidgetItem*,QListWidgetItem*)));
-        connect(edit1,SIGNAL(textChanged(QString)),this,SLOT(search(QString)));
-        connect(button1,SIGNAL(clicked()),edit1,SLOT(clear()));
-
-        b2->setDisabled(true);
-        b3->setDisabled(true);
-
         lw1->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
         lw1->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+        for(int i=0;i<2;i++){
+            v[i]=new QVBoxLayout;
+            h[i]=new QHBoxLayout;
+        }
+        b[0]=new QPushButton("New");
+        b[1]=new QPushButton("Edit");
+        b[1]->setDisabled(true);
+        b[2]=new QPushButton("Delete");
+        b[2]->setDisabled(true);
+        b[3]=new QPushButton("X");
+        b[3]->setStyleSheet("QPushButton{padding:4px 10px;background-color:rgb(77,77,77);}"
+                            "QPushButton:hover{background-color:rgb(232,17,35);}");
+        edit1=new QLineEdit;
+        edit1->setPlaceholderText("Search");
+
+        h[0]->addWidget(edit1);
+        h[0]->addWidget(b[3]);
+        v[0]->addLayout(h[0]);
+        v[0]->addWidget(lw1);
+        for(int i=0;i<3;i++) v[1]->addWidget(b[i]);
+        v[1]->addStretch();
+        for(int i=0;i<2;i++) h[1]->addLayout(v[i]);
+        setLayout(h[1]);
+
+        connect(b[0],SIGNAL(clicked()),this,SLOT(newClicked()));
+        connect(b[1],SIGNAL(clicked()),this,SLOT(editClicked()));
+        connect(b[2],SIGNAL(clicked()),this,SLOT(deleteClicked()));
+        connect(lw1,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SLOT(change(QListWidgetItem*,QListWidgetItem*)));
+        connect(edit1,SIGNAL(textChanged(QString)),this,SLOT(search(QString)));
+        connect(b[3],SIGNAL(clicked()),edit1,SLOT(clear()));
     }
     ~listWidget(){
         lw1->clear();
     }
     QListWidget* ListWidget(){return lw1;}
+    QVBoxLayout* ButtonVBox(){return v[1];}
+    QPushButton* NewButton(){return b[0];}
     trie& Trie(){return searchTrie;}
 };
 
@@ -446,13 +442,13 @@ protected slots:
     }
 public:
     fieldsListWidget(QWidget*parent=NULL):listWidget(parent){
-        b1->setText("New Gravitational Radial Field");
+        NewButton()->setText("New Gravitational Radial Field");
         b4=new QPushButton("New Gravitational Uniform Field",this);
         b5=new QPushButton("New Electric Radial Field",this);
         b6=new QPushButton("New Electric Uniform Field",this);
-        v2->insertWidget(1,b4);
-        v2->insertWidget(2,b5);
-        v2->insertWidget(3,b6);
+        ButtonVBox()->insertWidget(1,b4);
+        ButtonVBox()->insertWidget(2,b5);
+        ButtonVBox()->insertWidget(3,b6);
 
         connect(b4,SIGNAL(clicked()),this,SLOT(b4Clicked()));
         connect(b5,SIGNAL(clicked()),this,SLOT(b5Clicked()));

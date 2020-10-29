@@ -324,9 +324,10 @@ public:
 
 class listWidget:public QWidget{
     QListWidget*lw1;
-    QHBoxLayout*h1;
+    QHBoxLayout*h1,*h2;
     QLineEdit*edit1;
     trie searchTrie;
+    QPushButton*button1;
     Q_OBJECT
 protected slots:
     virtual void newClicked(){}
@@ -357,13 +358,19 @@ public:
         v1=new QVBoxLayout;
         v2=new QVBoxLayout;
         h1=new QHBoxLayout;
+        h2=new QHBoxLayout;
         b1=new QPushButton("New");
         b2=new QPushButton("Edit");
         b3=new QPushButton("Delete");
         edit1=new QLineEdit;
         edit1->setPlaceholderText("Search");
+        button1=new QPushButton("X");
+        button1->setStyleSheet("QPushButton{padding:4px 10px;background-color:rgb(77,77,77);}"
+                               "QPushButton:hover{background-color:rgb(232,17,35);}");
 
-        v1->addWidget(edit1);
+        h2->addWidget(edit1);
+        h2->addWidget(button1);
+        v1->addLayout(h2);
         v1->addWidget(lw1);
         v2->addWidget(b1);
         v2->addWidget(b2);
@@ -377,7 +384,8 @@ public:
         connect(b2,SIGNAL(clicked()),this,SLOT(editClicked()));
         connect(b3,SIGNAL(clicked()),this,SLOT(deleteClicked()));
         connect(lw1,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SLOT(change(QListWidgetItem*,QListWidgetItem*)));
-        connect(edit1,SIGNAL(textEdited(QString)),this,SLOT(search(QString)));
+        connect(edit1,SIGNAL(textChanged(QString)),this,SLOT(search(QString)));
+        connect(button1,SIGNAL(clicked()),edit1,SLOT(clear()));
 
         b2->setDisabled(true);
         b3->setDisabled(true);

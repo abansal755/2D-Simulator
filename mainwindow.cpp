@@ -110,18 +110,18 @@ void MainWindow::on_pushButton_clicked(){
     sys.setTimeFactor(ui->doubleSpinBox_2->value());
     sys.setVisc_K(ui->doubleSpinBox_3->value());
 
-    int numParticles=ui->widget->getListWidget()->count();
-    int numFields=ui->widget_2->getListWidget()->count();
+    int numParticles=ui->widget->ListWidget()->count();
+    int numFields=ui->widget_2->ListWidget()->count();
 
     sys.clearParticles();
     sys.clearFields();
 
     for(int i=0;i<numParticles;i++){
-        particlePropertiesWindow*p=(particlePropertiesWindow*)((particleListItem*)ui->widget->getListWidget()->item(i))->getPropertiesWindow();
+        particlePropertiesWindow*p=(particlePropertiesWindow*)((particleListItem*)ui->widget->ListWidget()->item(i))->getPropertiesWindow();
         sys.addParticle(p->createParticle());
     }
     for(int i=0;i<numFields;i++){
-        fieldPropertiesWindow*f=(fieldPropertiesWindow*)(((fieldListItem*)ui->widget_2->getListWidget()->item(i))->getPropertiesWindow());
+        fieldPropertiesWindow*f=(fieldPropertiesWindow*)(((fieldListItem*)ui->widget_2->ListWidget()->item(i))->getPropertiesWindow());
         sys.addField(f->createField());
     }
     sys.simulate();

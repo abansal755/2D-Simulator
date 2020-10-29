@@ -5,6 +5,7 @@
 #include<QLabel>
 #include<QSpinBox>
 #include<QColorDialog>
+#include<QLineEdit>
 #include"system.h"
 
 class propertiesWindow:public QDialog{
@@ -239,15 +240,93 @@ public:
     static int index;
 };
 
+class trieNode{
+public:
+    QChar data;
+    listItem*ptr;
+    trieNode**children;
+    trieNode(QChar data):data(data),ptr(NULL){
+        children=new trieNode*[36];
+        for(int i=0;i<36;i++) children[i]=NULL;
+    }
+    ~trieNode(){
+        for(int i=0;i<36;i++) delete children[i];
+        delete[]children;
+    }
+};
+
+class trie{
+    trieNode*root;
+    int index(QChar x){
+        if(x.isDigit()) return x.toLatin1()-'0'+26;
+        return x.toLatin1()-'a';
+    }
+    void insertWord(QString word,listItem*item,trieNode*root){
+        if(word.isEmpty()){
+            root->ptr=item;
+            return;
+        }
+        int ind=index(word[0]);
+        if(root->children[ind]==NULL) root->children[ind]=new trieNode(word[0]);
+        insertWord(word.mid(1),item,root->children[ind]);
+    }
+    trieNode*searchWord(QString word,trieNode*root){
+        if(word.isEmpty()) return root;
+        int ind=index(word[0]);
+        if(root->children[ind]==NULL) return NULL;
+        return searchWord(word.mid(1),root->children[ind]);
+    }
+    void setWords(trieNode*root){
+        if(root->ptr) root->ptr->setHidden(false);
+        for(int i=0;i<36;i++) if(root->children[i]) setWords(root->children[i]);
+    }
+    void removeWord(QString word,trieNode*root){
+        if(word.isEmpty()){
+            root->ptr=NULL;
+            return;
+        }
+        int ind=index(word[0]);
+        removeWord(word.mid(1),root->children[ind]);
+        for(int i=0;i<36;i++){
+            if(root->children[ind]->children[i]!=NULL) return;
+        }
+        delete root->children[ind];
+        root->children[ind]=NULL;
+    }
+public:
+    trie(){
+        root=new trieNode(0);
+    }
+    ~trie(){
+        delete root;
+    }
+    void insertWord(QString word,listItem*item){
+        for(int i=0;i<word.length();i++) insertWord(word.mid(i),item,root);
+    }
+    void searchWord(QString word,QListWidget*lw){
+        for(int i=0;i<lw->count();i++) lw->item(i)->setHidden(true);
+        trieNode*node=searchWord(word,root);
+        if(node==NULL) return;
+        setWords(node);
+    }
+    void removeWord(QString word){
+        removeWord(word,root);
+    }
+};
+
 class listWidget:public QWidget{
     QListWidget*lw1;
     QHBoxLayout*h1;
+    QLineEdit*edit1;
+    trie searchTrie;
     Q_OBJECT
 protected slots:
     virtual void newClicked(){}
     virtual void editClicked(){}
     void deleteClicked(){
-        delete lw1->takeItem(lw1->currentRow());
+        listItem*current=(listItem*)lw1->takeItem(lw1->currentRow());
+        searchTrie.removeWord(current->text());
+        delete current;
     }
     void change(QListWidgetItem*current,QListWidgetItem*previous){
         if(current==NULL){
@@ -257,6 +336,9 @@ protected slots:
             b2->setEnabled(true);
             b3->setEnabled(true);
         }
+    }
+    void search(QString word){
+        searchTrie.searchWord(word,lw1);
     }
 public:
     QVBoxLayout*v1,*v2;
@@ -269,7 +351,10 @@ public:
         b1=new QPushButton("New");
         b2=new QPushButton("Edit");
         b3=new QPushButton("Delete");
+        edit1=new QLineEdit;
+        edit1->setPlaceholderText("Search");
 
+        v1->addWidget(edit1);
         v1->addWidget(lw1);
         v2->addWidget(b1);
         v2->addWidget(b2);
@@ -283,6 +368,7 @@ public:
         connect(b2,SIGNAL(clicked()),this,SLOT(editClicked()));
         connect(b3,SIGNAL(clicked()),this,SLOT(deleteClicked()));
         connect(lw1,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SLOT(change(QListWidgetItem*,QListWidgetItem*)));
+        connect(edit1,SIGNAL(textEdited(QString)),this,SLOT(search(QString)));
 
         b2->setDisabled(true);
         b3->setDisabled(true);
@@ -293,17 +379,20 @@ public:
     ~listWidget(){
         lw1->clear();
     }
-    QListWidget* getListWidget(){return lw1;}
+    QListWidget* ListWidget(){return lw1;}
+    trie& Trie(){return searchTrie;}
 };
 
 class particlesListWidget:public listWidget{
     Q_OBJECT
 protected slots:
     void newClicked(){
-        getListWidget()->addItem(new particleListItem);
+        listItem*item=new particleListItem;
+        ListWidget()->addItem(item);
+        Trie().insertWord(item->text(),item);
     }
     void editClicked(){
-        particleListItem*current=(particleListItem*)getListWidget()->currentItem();
+        particleListItem*current=(particleListItem*)ListWidget()->currentItem();
         if(current) current->getPropertiesWindow()->exec();
     }
 public:
@@ -315,20 +404,28 @@ class fieldsListWidget:public listWidget{
     QPushButton*b4,*b5,*b6;
 protected slots:
     void editClicked(){
-        fieldListItem*current=(fieldListItem*)getListWidget()->currentItem();
+        fieldListItem*current=(fieldListItem*)ListWidget()->currentItem();
         if(current) current->getPropertiesWindow()->exec();
     }
     void newClicked(){
-        getListWidget()->addItem(new gravitationalRadialFieldListItem);
+        listItem*item=new gravitationalRadialFieldListItem;
+        ListWidget()->addItem(item);
+        Trie().insertWord(item->text(),item);
     }
     void b4Clicked(){
-        getListWidget()->addItem(new gravitationalUniformFieldListItem);
+        listItem*item=new gravitationalUniformFieldListItem;
+        ListWidget()->addItem(item);
+        Trie().insertWord(item->text(),item);
     }
     void b5Clicked(){
-        getListWidget()->addItem(new electricRadialFieldListItem);
+        listItem*item=new electricRadialFieldListItem;
+        ListWidget()->addItem(item);
+        Trie().insertWord(item->text(),item);
     }
     void b6Clicked(){
-        getListWidget()->addItem(new electricUniformFieldListItem);
+        listItem*item=new electricUniformFieldListItem;
+        ListWidget()->addItem(item);
+        Trie().insertWord(item->text(),item);
     }
 public:
     fieldsListWidget(QWidget*parent=NULL):listWidget(parent){

@@ -286,7 +286,9 @@ class trie{
             return;
         }
         int ind=index(word[0]);
+        if(root->children[ind]==NULL) return;
         removeWord(word.mid(1),root->children[ind]);
+        if(root->children[ind]->ptr) return;
         for(int i=0;i<36;i++){
             if(root->children[ind]->children[i]!=NULL) return;
         }
@@ -304,13 +306,14 @@ public:
         for(int i=0;i<word.length();i++) insertWord(word.mid(i),item,root);
     }
     void searchWord(QString word,QListWidget*lw){
+        word=word.toLower();
         for(int i=0;i<lw->count();i++) lw->item(i)->setHidden(true);
         trieNode*node=searchWord(word,root);
         if(node==NULL) return;
         setWords(node);
     }
     void removeWord(QString word){
-        removeWord(word,root);
+        for(int i=0;i<word.length();i++) removeWord(word.mid(i),root);
     }
 };
 
@@ -410,22 +413,22 @@ protected slots:
     void newClicked(){
         listItem*item=new gravitationalRadialFieldListItem;
         ListWidget()->addItem(item);
-        Trie().insertWord(item->text(),item);
+        Trie().insertWord(item->text().toLower(),item);
     }
     void b4Clicked(){
         listItem*item=new gravitationalUniformFieldListItem;
         ListWidget()->addItem(item);
-        Trie().insertWord(item->text(),item);
+        Trie().insertWord(item->text().toLower(),item);
     }
     void b5Clicked(){
         listItem*item=new electricRadialFieldListItem;
         ListWidget()->addItem(item);
-        Trie().insertWord(item->text(),item);
+        Trie().insertWord(item->text().toLower(),item);
     }
     void b6Clicked(){
         listItem*item=new electricUniformFieldListItem;
         ListWidget()->addItem(item);
-        Trie().insertWord(item->text(),item);
+        Trie().insertWord(item->text().toLower(),item);
     }
 public:
     fieldsListWidget(QWidget*parent=NULL):listWidget(parent){

@@ -106,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),ui(new Ui::MainWindo
     ui->spinBox_2->setButtonSymbols(QAbstractSpinBox::NoButtons);
     ui->spinBox_3->setButtonSymbols(QAbstractSpinBox::NoButtons);
     ui->spinBox_4->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    ui->spinBox_5->setButtonSymbols(QAbstractSpinBox::NoButtons);
 }
 
 MainWindow::~MainWindow(){
@@ -118,6 +119,7 @@ void MainWindow::on_pushButton_clicked(){
     sys.setScale(ui->doubleSpinBox->value());
     sys.setBoundX(ui->spinBox->value());
     sys.setBoundY(ui->spinBox_2->value());
+    sys.setFps(ui->spinBox_5->value());
     sys.setIterations(ui->spinBox_3->value());
     sys.setDuration(ui->spinBox_4->value());
     sys.setTimeFactor(ui->doubleSpinBox_2->value());

@@ -29,128 +29,6 @@
          <string>System Settings</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="4" column="1">
-          <widget class="QSpinBox" name="spinBox_3">
-           <property name="maximum">
-            <number>2147483647</number>
-           </property>
-           <property name="value">
-            <number>300</number>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Corresponds to the length of 1 px&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Scale:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
-           <property name="maximum">
-            <double>2147483647.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QSpinBox" name="spinBox_2">
-           <property name="maximum">
-            <number>2147483647</number>
-           </property>
-           <property name="value">
-            <number>100</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Width (in px):</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
-           <property name="maximum">
-            <double>2147483647.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QSpinBox" name="spinBox">
-           <property name="maximum">
-            <number>2147483647</number>
-           </property>
-           <property name="value">
-            <number>100</number>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Height (in px):</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox">
-           <property name="maximum">
-            <double>2147483647.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Viscosity:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Simulation Name:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QSpinBox" name="spinBox_4">
-           <property name="maximum">
-            <number>2147483647</number>
-           </property>
-           <property name="value">
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Time Factor:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Iterations (per sec):</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QLineEdit" name="lineEdit">
            <property name="layoutDirection">
@@ -164,7 +42,31 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Corresponds to the length of 1 px&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Scale:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Width (in px):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Duration (in secs):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -177,10 +79,125 @@
            </property>
           </spacer>
          </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>Duration (in secs):</string>
+            <string>Simulation Name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox">
+           <property name="maximum">
+            <double>2147483647.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QSpinBox" name="spinBox_4">
+           <property name="maximum">
+            <number>2147483647</number>
+           </property>
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QSpinBox" name="spinBox">
+           <property name="maximum">
+            <number>2147483647</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QSpinBox" name="spinBox_2">
+           <property name="maximum">
+            <number>2147483647</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+           <property name="maximum">
+            <double>2147483647.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Viscosity:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Iterations (per sec):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QSpinBox" name="spinBox_3">
+           <property name="maximum">
+            <number>2147483647</number>
+           </property>
+           <property name="value">
+            <number>300</number>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+           <property name="maximum">
+            <double>2147483647.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Height (in px):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Time Factor:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>FPS (frames per sec):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QSpinBox" name="spinBox_5">
+           <property name="minimum">
+            <number>30</number>
+           </property>
+           <property name="maximum">
+            <number>2147483647</number>
            </property>
           </widget>
          </item>

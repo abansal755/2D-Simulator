@@ -201,6 +201,7 @@ class System{
     vector<ofstream> stats;
     float scale;// 1px corresponds to scale meters
     int boundX,boundY;//in px
+    int fps;
     int iterations;//per second and must be a multiple of 30(fps)
     int duration;//num of seconds to simulate
     float timeFactor;// 1-realtime
@@ -267,8 +268,8 @@ class System{
         }
     }
 public:
-    System(QString name="sim",float scale = 1, int boundX = 100, int boundY = 100, int iterations = 300, int duration = 1, float timeFactor = 1, float visc_k = 0)
-            :scale(scale), boundX(boundX), boundY(boundY), iterations(iterations), duration(duration), timeFactor(timeFactor), visc_k(visc_k),name(name)
+    System(QString name="sim",float scale = 1, int boundX = 100, int boundY = 100,int fps = 30, int iterations = 300, int duration = 1, float timeFactor = 1, float visc_k = 0)
+            :scale(scale), boundX(boundX), boundY(boundY), fps(fps), iterations(iterations), duration(duration), timeFactor(timeFactor), visc_k(visc_k),name(name)
     {
             dt = ((float)1 / iterations) * timeFactor;
     }
@@ -281,6 +282,7 @@ public:
     float Scale(){return scale;}
     int BoundX(){return boundX;}
     int BoundY(){return boundY;}
+    int Fps(){return fps;}
     int Iterations(){return iterations;}
     int Duration(){return duration;}
     float TimeFactor(){return timeFactor;}
@@ -292,6 +294,7 @@ public:
     void setScale(float scale){this->scale=scale;}
     void setBoundX(int boundX){this->boundX=boundX;}
     void setBoundY(int boundY){this->boundY=boundY;}
+    void setFps(int fps){this->fps=fps;}
     void setIterations(int iterations){
         this->iterations=iterations;
         dt = ((float)1 / iterations) * timeFactor;
@@ -392,7 +395,7 @@ public:
                 updateAccn(particles[j]);
                 updateTraject(j);
             }
-            if(i%(iterations/30)==0){
+            if(i%(iterations/fps)==0){
                 updateBuffer(buffer);
                 QString fileName=framePath;
                 for(int j=0;j<padding-numDigits(frame);j++) fileName+='0';

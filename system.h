@@ -13,6 +13,8 @@ const float _K = 9e9;
 float distance(float x1, float y1, float x2, float y2);
 int numDigits(int n);
 void blur(QImage&img,int radius);
+int clamp(int x);
+QColor add(QColor x,QColor y);
 
 class particle{
     QString id;
@@ -22,9 +24,57 @@ class particle{
     float q,m;
     int radius,trajectRadius;
     QColor color;
+    QColor**matrix;
+
+    void clearMatrix(){
+        for(int i=0;i<2*radius+1;i++) delete[]matrix[i];
+        delete[]matrix;
+    }
+    void createMatrix(){
+        matrix=new QColor*[2*radius+1];
+        for(int i=0;i<2*radius+1;i++) matrix[i]=new QColor[2*radius+1];
+    }
+    void setMatrix(){
+        matrix[radius][radius]=color;
+        int r0=color.red();
+        int g0=color.green();
+        int b0=color.blue();
+
+        int xr=1,xg=1,xb=1;
+        if(r0!=0) xr=ceil(log(r0)/log(radius));
+        if(g0!=0) xg=ceil(log(g0)/log(radius));
+        if(b0!=0) xb=ceil(log(b0)/log(radius));
+
+        for(int i=0;i<2*radius+1;i++){
+            for(int j=0;j<2*radius+1;j++){
+                if(i==radius && j==radius) continue;
+                float d=sqrt(pow(i-radius,2)+pow(j-radius,2));
+                matrix[i][j]=QColor(r0/pow(d,xr),
+                                    g0/pow(d,xg),
+                                    b0/pow(d,xb));
+            }
+        }
+    }
 public:
     particle(QString id,float vx=0,float vy=0,float x=0,float y=0,float q=0,float m=0,int radius=5,int trajectRadius=3,QColor color=Qt::white)
-        :id(id),ax(0),ay(0),vx(vx),vy(vy),x(x),y(y),q(q),m(m),radius(radius),trajectRadius(trajectRadius),color(color){}
+        :id(id),ax(0),ay(0),vx(vx),vy(vy),x(x),y(y),q(q),m(m),radius(radius),trajectRadius(trajectRadius),color(color){
+        createMatrix();
+        setMatrix();
+    }
+    particle(const particle&p){
+        id=p.id;
+        ax=p.ax, ay=p.ay;
+        vx=p.vx, vy=p.vy;
+        x=p.x, y=p.y;
+        q=p.q, m=p.m;
+        radius=p.radius, trajectRadius=p.trajectRadius;
+        color=p.color;
+        createMatrix();
+        setMatrix();
+    }
+    ~particle(){
+        clearMatrix();
+    }
     //getters
     QString Id(){return id;}
     float Ax(){return ax;}
@@ -37,6 +87,7 @@ public:
     float M(){return m;}
     int Radius(){return radius;}
     int TrajectRadius(){return trajectRadius;}
+    QColor** Matrix(){return matrix;}
     QColor Color(){return color;}
     //setters
     void setId(QString id){this->id=id;}
@@ -48,9 +99,17 @@ public:
     void setY(float y){this->y=y;}
     void setQ(float q){this->q=q;}
     void setM(float m){this->m=m;}
-    void setRadius(int radius){this->radius=radius;}
+    void setRadius(int radius){
+        clearMatrix();
+        this->radius=radius;
+        createMatrix();
+        setMatrix();
+    }
     void setTrajectRadius(int trajectRadius){this->trajectRadius=trajectRadius;}
-    void setColor(QColor color){this->color=color;}
+    void setColor(QColor color){
+        this->color=color;
+        setMatrix();
+    }
 };
 
 class field{
@@ -175,17 +234,17 @@ class System{
         }
         for(int i=0;i<particles.size();i++){
             particle*p=particles[i];
-            int y=p->Y()/scale;
-            int x=p->X()/scale;
-            for(int dy=-p->Radius();dy<=p->Radius();dy++){
-                for(int dx=-p->Radius();dx<=p->Radius();dx++){
-                    if(x+dx<0 || x+dx>=boundX) continue;
-                    if(y+dy<0 || y+dy>=boundY) continue;
-                    buffer->setPixelColor(x+dx,boundY-y-dy-1,p->Color());
+            int Y=p->Y()/scale;
+            int X=p->X()/scale;
+            int R=p->Radius();
+            for(int dy=-R;dy<=R;dy++){
+                for(int dx=-R;dx<=R;dx++){
+                    if(Y+dy<0 || Y+dy>=boundY) continue;
+                    if(X+dx<0 || X+dx>=boundX) continue;
+                    buffer->setPixelColor(X+dx,boundY-Y-dy-1,add(buffer->pixelColor(X+dx,boundY-Y-dy-1),p->Matrix()[R+dy][R+dx]));
                 }
             }
         }
-        blur(*buffer,3);
         for(int y=0;y<boundY;y++){
             buffer->setPixelColor(0,y,Qt::red);
             buffer->setPixelColor(boundX-1,y,Qt::red);

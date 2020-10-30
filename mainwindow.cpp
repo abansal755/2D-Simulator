@@ -41,6 +41,19 @@ void blur(QImage&img,int radius=1){
     img=img1;
 }
 
+int clamp(int x){
+    if(x<0) return 0;
+    if(x>255) return 255;
+    return x;
+}
+
+QColor add(QColor x,QColor y){
+    int r=x.red()+y.red();
+    int g=x.green()+y.green();
+    int b=x.blue()+y.blue();
+    return QColor(clamp(r),clamp(g),clamp(b));
+}
+
 void QSS(QWidget*widget){
     widget->setStyleSheet("QWidget{background-color: rgb(30,30,30);color:rgb(231,231,231);font: 800 11pt ""Calibri"";border: 0px;}"
                           "QWidget#centralwidget{background-color: rgb(37,37,37);}"

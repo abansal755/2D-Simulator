@@ -107,7 +107,7 @@ public:
         label[1]=new QLabel("cy:");
         label[2]=new QLabel("k:");
         for(int i=0;i<2;i++) spinBox[i]->setRange(-FLT_MAX,FLT_MAX);
-        spinBox[2]->setRange(0,FLT_MAX);
+        spinBox[2]->setRange(-FLT_MAX,FLT_MAX);
         for(int i=0;i<3;i++) spinBox[i]->setDecimals(10);
 
         for(int i=0;i<2;i++){

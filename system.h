@@ -351,6 +351,7 @@ public:
                     <<"Scale = "<<QString::number(scale).toStdString()<<'\n'
                     <<"Width = "<<QString::number(boundX).toStdString()<<'\n'
                     <<"Height = "<<QString::number(boundY).toStdString()<<'\n'
+                    <<"FPS = "<<QString::number(fps).toStdString()<<'\n'
                     <<"Iterations = "<<QString::number(iterations).toStdString()<<'\n'
                     <<"Duration = "<<QString::number(duration).toStdString()<<'\n'
                     <<"Time Factor = "<<QString::number(timeFactor).toStdString()<<'\n'

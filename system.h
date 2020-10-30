@@ -49,9 +49,9 @@ class particle{
             for(int j=0;j<2*radius+1;j++){
                 if(i==radius && j==radius) continue;
                 float d=sqrt(pow(i-radius,2)+pow(j-radius,2));
-                matrix[i][j]=QColor(r0/pow(d,xr),
-                                    g0/pow(d,xg),
-                                    b0/pow(d,xb));
+                matrix[i][j]=QColor((r0==0)? 0: r0/pow(d,xr),
+                                    (g0==0)? 0: g0/pow(d,xg),
+                                    (b0==0)? 0: b0/pow(d,xb));
             }
         }
     }
@@ -87,7 +87,7 @@ public:
     float M(){return m;}
     int Radius(){return radius;}
     int TrajectRadius(){return trajectRadius;}
-    QColor** Matrix(){return matrix;}
+    QColor Matrix(int x,int y){return matrix[y][x];}
     QColor Color(){return color;}
     //setters
     void setId(QString id){this->id=id;}
@@ -241,7 +241,7 @@ class System{
                 for(int dx=-R;dx<=R;dx++){
                     if(Y+dy<0 || Y+dy>=boundY) continue;
                     if(X+dx<0 || X+dx>=boundX) continue;
-                    buffer->setPixelColor(X+dx,boundY-Y-dy-1,add(buffer->pixelColor(X+dx,boundY-Y-dy-1),p->Matrix()[R+dy][R+dx]));
+                    buffer->setPixelColor(X+dx,boundY-Y-dy-1,add(buffer->pixelColor(X+dx,boundY-Y-dy-1),p->Matrix(R+dx,R+dy)));
                 }
             }
         }

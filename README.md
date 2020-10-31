@@ -16,24 +16,34 @@ You can download the latest installable version of [2D-Simulator](https://github
 # Parameters used
 * SYSTEM SETTINGS 
 
-    * Simulation Name - Gives a name to your simulation file.
-    * Scale - Scales the pixel size of your simulator in scale meters.
-    * Width and Height - Sets the boundary size of your simulator.
-    * FPS - Sets number of frames to be be simulated per second.
-    * Iterations - Sets number of iterations to be performed per sec and must be multiple of 30(fps).
-    * Duration - Sets time duration in secs for which simulations has to be performed..
-    * Time Factor - Scales time (determines how fast time progress). 
-    * Viscous - Sets the constant in viscous forces applied due to resistane offered by medium.
+    * Simulation Name - Gives a name to your simulation file
+    * Scale - Scales the pixel size of your simulator in scale meters  
+    * Width and Height - Sets the boundary size of your simulator
+    * FPS - Sets number of frames to be be simulated per second
+    * Iterations - Sets number of iterations to be performed per sec and must be multiple of 30(fps)
+    * Duration - Sets time duration in secs for which simulations has to be performed
+    * Time Factor - Scales time (determines how fast time progress) 
+    * Viscous - Sets the constant in viscous forces applied due to resistane offered by medium
 
 * PARTICLE SETTINGS 
-    * x and y - sets the initial spacial co-ordinates of the particle.
-    * vx and vy - sets the initial velocity of the particle in x and y directions respectively.
-    * radius - sets the size of particle.
-    * trajectRadius - sets the size of trajectory which particle will follow on applying external forces.
-    * Pick color - sets a colour to the particle.
+    * x and y - sets the initial spacial co-ordinates of the particle
+    * vx and vy - sets the initial velocity of the particle in x and y directions respectively
+    * radius - sets the size of particle
+    * trajectRadius - sets the size of trajectory which particle will follow on applying external forces
+    * Pick color - sets a colour to the particle
 * FIELD SETTINGS 
-    * sets properties of respective uniform and radial fields.
+    * sets properties of respective uniform and radial fields
+    
 
+# Usage
+Some simple usage tips -
+* Once you have downloaded a version, extract the zip file and run the executable file in 2D Simulator.
+* Under system settings set the various parameters of system.
+* In the Particle tab add particles to system with New button.
+* Now selelect each particle individually and with edit button set the particle parameters.
+* In the Fields tab add New radial and uniform Gravitaional and Electirc fields to system with their respective New buttons.
+* Now selelect each field individually and with edit button set the field parameters.
+* You may also Delete any particle or field and search for them in search bar.
 
 
 # References

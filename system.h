@@ -72,6 +72,17 @@ public:
         createMatrix();
         setMatrix();
     }
+    void operator=(const particle&p){
+        id=p.id;
+        ax=p.ax, ay=p.ay;
+        vx=p.vx, vy=p.vy;
+        x=p.x, y=p.y;
+        q=p.q, m=p.m;
+        radius=p.radius, trajectRadius=p.trajectRadius;
+        color=p.color;
+        createMatrix();
+        setMatrix();
+    }
     ~particle(){
         clearMatrix();
     }

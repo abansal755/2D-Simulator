@@ -380,7 +380,7 @@ public:
         }
         for(int i=0;i<particles.size();i++) updateAccn(particles[i]);
         QImage* buffer=new QImage(boundX,boundY,QImage::Format_RGB888);
-        int padding=numDigits(duration*30-1);
+        int padding=numDigits(duration*fps-1);
         updateBuffer(buffer);
         QString temp=framePath;
         for(int i=0;i<padding;i++) temp+='0';
